@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arbus Academy</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:sans-serif;background:#0C0C0E;color:#F0F0F5;min-height:100vh;}
+#tela-login{display:flex;align-items:center;justify-content:center;min-height:100vh;}
+.login-box{background:#141417;border:1px solid #252530;border-radius:16px;padding:2.5rem;width:100%;max-width:380px;}
+.logo-nome{font-size:22px;font-weight:700;text-align:center;margin-bottom:4px;}
+.logo-sub{font-size:11px;color:#00BFFF;letter-spacing:1px;text-transform:uppercase;text-align:center;margin-bottom:1.5rem;}
+.abas{display:flex;background:#1A1A1F;border-radius:8px;padding:3px;margin-bottom:1.5rem;}
+.aba{flex:1;text-align:center;padding:8px;border-radius:6px;cursor:pointer;font-size:13px;color:#8A8A9A;}
+.aba.ativa{background:#141417;color:#fff;font-weight:600;}
+label{display:block;font-size:12px;color:#8A8A9A;margin-bottom:5px;margin-top:12px;}
+input,select,textarea{width:100%;padding:10px 12px;background:#1A1A1F;border:1px solid #35353f;border-radius:8px;color:#fff;font-size:14px;outline:none;font-family:sans-serif;}
+input:focus,select:focus,textarea:focus{border-color:#00BFFF;}
+input::placeholder,textarea::placeholder{color:#4A4A5A;}
+select option{background:#1A1A1F;}
+.btn{padding:10px 20px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;}
+.btn-primary{background:#00BFFF;color:#000;}
+.btn-primary:hover{background:#33CCFF;}
+.btn-primary:disabled{opacity:.5;cursor:default;}
+.btn-ghost{background:none;border:1px solid #35353f;color:#8A8A9A;}
+.btn-ghost:hover{border-color:#00BFFF;color:#00BFFF;}
+.btn-danger{background:none;border:1px solid rgba(248,113,113,.3);color:#f87171;}
+.btn-danger:hover{background:rgba(248,113,113,.1);}
+.btn-full{width:100%;margin-top:14px;}
+.msg{padding:10px 12px;border-radius:8px;font-size:13px;margin-top:10px;display:none;}
+.msg.erro{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);color:#f87171;}
+.msg.ok{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:#22C55E;}
+#campo-nome{display:none;}
+.topbar{background:#141417;border-bottom:1px solid #252530;padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;}
+.topbar-logo{font-size:15px;font-weight:700;}
+.topbar-logo span{color:#00BFFF;}
+.btn-sair{background:none;border:1px solid #35353f;color:#8A8A9A;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px;}
+.btn-sair:hover{color:#f87171;border-color:#f87171;}
+.conteudo{padding:2rem;max-width:900px;margin:0 auto;width:100%;}
+.boas-vindas{background:#141417;border:1px solid #252530;border-radius:14px;padding:2rem;margin-bottom:1.5rem;}
+.boas-vindas h2{font-size:22px;font-weight:700;margin-bottom:6px;}
+.boas-vindas p{color:#8A8A9A;font-size:14px;}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:1.5rem;}
+.stat{background:#141417;border:1px solid #252530;border-radius:12px;padding:1rem;}
+.stat-n{font-size:28px;font-weight:700;color:#00BFFF;}
+.stat-l{font-size:12px;color:#8A8A9A;margin-top:4px;}
+.titulo-sec{font-size:15px;font-weight:600;margin-bottom:1rem;}
+.modulos{display:flex;flex-direction:column;gap:10px;}
+.modulo{background:#141417;border:1px solid #252530;border-radius:12px;padding:1rem 1.25rem;display:flex;align-items:center;gap:14px;cursor:pointer;transition:border-color .15s;}
+.modulo:hover:not(.bloqueado){border-color:#00BFFF;}
+.modulo.bloqueado{opacity:.4;cursor:default;}
+.mod-num{width:38px;height:38px;border-radius:8px;background:#00BFFF;color:#000;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.mod-num.concluido{background:rgba(34,197,94,.15);color:#22C55E;border:1px solid rgba(34,197,94,.3);}
+.mod-num.bloq{background:#222228;color:#4A4A5A;border:1px solid #252530;}
+.mod-info{flex:1;}
+.mod-titulo{font-size:13px;font-weight:600;}
+.mod-sub{font-size:11px;color:#8A8A9A;margin-top:2px;}
+.mod-pct{font-size:12px;color:#00BFFF;font-weight:600;}
+.progbar{height:4px;background:#222228;border-radius:4px;margin-top:6px;overflow:hidden;}
+.progbar-fill{height:100%;background:#00BFFF;border-radius:4px;}
+/* OVERLAY */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:999;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:2rem 1rem;}
+.overlay-box{background:#141417;border:1px solid #35353f;border-radius:14px;padding:2rem;width:100%;max-width:720px;}
+.overlay-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
+.overlay-titulo{font-size:17px;font-weight:700;}
+.btn-close{background:none;border:none;color:#8A8A9A;font-size:22px;cursor:pointer;line-height:1;}
+.video-wrap{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:10px;background:#000;margin-bottom:12px;}
+.video-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none;}
+.aula-titulo{font-size:12px;color:#8A8A9A;margin-bottom:6px;}
+.prog-botoes{display:flex;gap:8px;margin-bottom:1.25rem;}
+.prog-btn{flex:1;padding:8px 4px;background:#222228;color:#8A8A9A;border:1px solid #35353f;border-radius:7px;font-size:13px;cursor:pointer;}
+.prog-btn.ativo{background:#00BFFF;color:#000;font-weight:700;}
+.sem-aulas{text-align:center;padding:2rem;color:#4A4A5A;font-size:13px;}
+</style>
+</head>
+<body>
+
+<div id="tela-login">
+  <div class="login-box">
+    <div class="logo-nome">ARBUS Academy</div>
+    <div class="logo-sub">Frotas Inteligentes</div>
+    <div class="abas">
+      <div class="aba ativa" id="aba-entrar" onclick="trocarAba('entrar')">Entrar</div>
+      <div class="aba" id="aba-criar" onclick="trocarAba('criar')">Criar conta</div>
+    </div>
+    <div id="campo-nome"><label>Nome completo</label><input type="text" id="inp-nome" placeholder="João Silva"></div>
+    <label>E-mail</label><input type="email" id="inp-email" placeholder="seu@email.com">
+    <label>Senha</label><input type="password" id="inp-senha" placeholder="mínimo 6 caracteres">
+    <div class="msg erro" id="msg-erro"></div>
+    <div class="msg ok" id="msg-ok"></div>
+    <button class="btn btn-primary btn-full" id="btn-principal" onclick="autenticar()">Entrar</button>
+  </div>
+</div>
+
+<div id="tela-app" style="display:none;">
+  <div class="topbar">
+    <div class="topbar-logo">ARBUS <span>Academy</span></div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span id="nome-usuario" style="font-size:13px;color:#8A8A9A;"></span>
+      <button class="btn-sair" onclick="sair()">Sair</button>
+    </div>
+  </div>
+  <div class="conteudo">
+    <div class="boas-vindas">
+      <h2>Bem-vindo, <span id="primeiro-nome" style="color:#00BFFF;"></span>! 👋</h2>
+      <p>Continue sua trilha de treinamento da plataforma Arbus.</p>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="stat-n" id="s-concluidos">0</div><div class="stat-l">Módulos concluídos</div></div>
+      <div class="stat"><div class="stat-n" id="s-progresso">0%</div><div class="stat-l">Progresso geral</div></div>
+      <div class="stat"><div class="stat-n" id="s-certs">0</div><div class="stat-l">Certificados</div></div>
+    </div>
+    <div class="titulo-sec">Trilha de treinamento</div>
+    <div class="modulos" id="lista-modulos"></div>
+  </div>
+</div>
+
+<script>
+const URL_SB = 'https://bnysqxhhbajdxwputaea.supabase.co';
+const KEY_SB = 'sb_publishable_aqIlZf8t8VnJyPT-9j1MTw_6Wa5QcRy';
+
+const MODULOS = [
+  {id:1, titulo:'Dashboard — Visão Inicial'},
+  {id:2, titulo:'Cadastro e configuração de veículos'},
+  {id:3, titulo:'Rastreamento em tempo real'},
+  {id:4, titulo:'Relatórios e telemetria'},
+  {id:5, titulo:'Alertas e eventos críticos'},
+  {id:6, titulo:'Jornada de trabalho e motoristas'},
+  {id:7, titulo:'Gestão de multas e infrações'},
+  {id:8, titulo:'Integração com Power BI'},
+];
+
+let sb, modoAtual='entrar', usuarioAtual=null, progressoUsuario={}, aulasCache={};
+
+window.onload = function() {
+  if (!window.supabase) return;
+  sb = window.supabase.createClient(URL_SB, KEY_SB);
+  sb.auth.getSession().then(function(r){ if(r.data.session) entrarNoApp(r.data.session.user); });
+  sb.auth.onAuthStateChange(function(ev,s){ if(ev==='SIGNED_IN'&&s) entrarNoApp(s.user); if(ev==='SIGNED_OUT') voltarLogin(); });
+};
+
+function trocarAba(m) {
+  modoAtual=m;
+  document.getElementById('aba-entrar').className='aba'+(m==='entrar'?' ativa':'');
+  document.getElementById('aba-criar').className='aba'+(m==='criar'?' ativa':'');
+  document.getElementById('campo-nome').style.display=m==='criar'?'block':'none';
+  document.getElementById('btn-principal').textContent=m==='entrar'?'Entrar':'Criar conta';
+  limparMsg();
+}
+function mostrarErro(t){var e=document.getElementById('msg-erro');e.textContent=t;e.style.display='block';document.getElementById('msg-ok').style.display='none';}
+function mostrarOk(t){var e=document.getElementById('msg-ok');e.textContent=t;e.style.display='block';document.getElementById('msg-erro').style.display='none';}
+function limparMsg(){document.getElementById('msg-erro').style.display='none';document.getElementById('msg-ok').style.display='none';}
+
+async function autenticar() {
+  if(!sb){mostrarErro('Servidor não conectado. Recarregue a página.');return;}
+  var email=document.getElementById('inp-email').value.trim();
+  var senha=document.getElementById('inp-senha').value;
+  var nome=document.getElementById('inp-nome').value.trim();
+  var btn=document.getElementById('btn-principal');
+  limparMsg();
+  if(!email||!senha){mostrarErro('Preencha e-mail e senha.');return;}
+  if(senha.length<6){mostrarErro('Senha deve ter pelo menos 6 caracteres.');return;}
+  btn.disabled=true; btn.textContent='Aguarde...';
+  try {
+    if(modoAtual==='entrar'){
+      var r=await sb.auth.signInWithPassword({email,password:senha});
+      if(r.error) throw r.error;
+    } else {
+      if(!nome){mostrarErro('Digite seu nome completo.');btn.disabled=false;btn.textContent='Criar conta';return;}
+      var r2=await sb.auth.signUp({email,password:senha,options:{data:{full_name:nome}}});
+      if(r2.error) throw r2.error;
+      if(!r2.data.session){mostrarOk('Conta criada! Agora faça login.');trocarAba('entrar');btn.disabled=false;btn.textContent='Entrar';return;}
+    }
+  } catch(e) {
+    var msgs={'Invalid login credentials':'E-mail ou senha incorretos.','User already registered':'E-mail já cadastrado.','Email not confirmed':'Confirme seu e-mail primeiro.','Password should be at least 6 characters':'Senha muito curta.'};
+    mostrarErro(msgs[e.message]||e.message);
+    btn.disabled=false; btn.textContent=modoAtual==='entrar'?'Entrar':'Criar conta';
+  }
+}
+
+async function entrarNoApp(user) {
+  usuarioAtual=user;
+  var nome=(user.user_metadata||{}).full_name||user.email.split('@')[0];
+  document.getElementById('nome-usuario').textContent=user.email;
+  document.getElementById('primeiro-nome').textContent=nome.split(' ')[0];
+  document.getElementById('tela-login').style.display='none';
+  document.getElementById('tela-app').style.display='block';
+  await carregarProgresso();
+  renderizarModulos();
+}
+function voltarLogin(){usuarioAtual=null;progressoUsuario={};aulasCache={};document.getElementById('tela-app').style.display='none';document.getElementById('tela-login').style.display='flex';document.getElementById('btn-principal').disabled=false;document.getElementById('btn-principal').textContent='Entrar';}
+async function sair(){await sb.auth.signOut();}
+async function carregarProgresso(){try{var r=await sb.from('progress').select('*').eq('user_id',usuarioAtual.id);progressoUsuario={};(r.data||[]).forEach(function(x){progressoUsuario[x.module_id]=x;});}catch(e){}}
+async function salvarProgresso(mid,pct){var done=pct>=100;await sb.from('progress').upsert({user_id:usuarioAtual.id,module_id:mid,percent:pct,completed:done,updated_at:new Date().toISOString()},{onConflict:'user_id,module_id'});await carregarProgresso();renderizarModulos();}
+function getPct(id){return progressoUsuario[id]?progressoUsuario[id].percent:0;}
+function getConcluido(id){return !!(progressoUsuario[id]&&progressoUsuario[id].completed);}
+function getDesbloq(id){if(id<=2)return true;return getConcluido(id-1);}
+
+function renderizarModulos(){
+  var conc=MODULOS.filter(function(m){return getConcluido(m.id);}).length;
+  var pg=Math.round(MODULOS.reduce(function(a,m){return a+getPct(m.id);},0)/MODULOS.length);
+  document.getElementById('s-concluidos').textContent=conc;
+  document.getElementById('s-progresso').textContent=pg+'%';
+  document.getElementById('s-certs').textContent=conc>=4?1:0;
+  var html='';
+  MODULOS.forEach(function(m){
+    var pct=getPct(m.id), done=getConcluido(m.id), desbloq=getDesbloq(m.id);
+    var nc=done?'mod-num concluido':desbloq?'mod-num':'mod-num bloq';
+    var bc=desbloq?'modulo':'modulo bloqueado';
+    var botao=desbloq?'<button onclick="event.stopPropagation();abrirModulo('+m.id+')" style="background:'+(done?'#222228':'#00BFFF')+';color:'+(done?'#8A8A9A':'#000')+';border:none;border-radius:7px;padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;">'+(done?'Revisitar':'Continuar ▶')+'</button>':'';
+    var barra=pct>0?'<div class="progbar"><div class="progbar-fill" style="width:'+pct+'%"></div></div>':'';
+    html+='<div class="'+bc+'" onclick="'+(desbloq?'abrirModulo('+m.id+')':'')+'"><div class="'+nc+'">'+(done?'✓':m.id)+'</div><div class="mod-info"><div class="mod-titulo">'+m.titulo+'</div><div class="mod-sub">'+(done?'Concluído':pct>0?pct+'% concluído':'Não iniciado')+'</div>'+barra+'</div><div class="mod-pct">'+(done?'':pct+'%')+'</div>'+botao+'</div>';
+  });
+  document.getElementById('lista-modulos').innerHTML=html;
+}
+
+async function abrirModulo(id) {
+  var m=MODULOS.find(function(x){return x.id===id;});
+  var cur=getPct(id);
+  // Busca aulas do Supabase (cache)
+  var aulas=aulasCache[id];
+  if(!aulas){
+    try{var r=await sb.from('aulas').select('*').eq('module_id',id).eq('ativo',true).order('ordem');aulas=r.data||[];}catch(e){aulas=[];}
+    aulasCache[id]=aulas;
+  }
+  var videos=aulas.filter(function(a){return a.tipo==='video';});
+  var pdfs=aulas.filter(function(a){return a.tipo==='pdf';});
+
+  var videosHtml='';
+  if(videos.length){
+    videosHtml='<div style="margin-bottom:1.5rem;"><div style="font-size:12px;font-weight:600;color:#4A4A5A;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px;">Vídeos ('+videos.length+')</div>';
+    videos.forEach(function(a,i){
+      var ytId=extrairYoutubeId(a.url);
+      var embedSrc=ytId?'https://www.youtube.com/embed/'+ytId+'?rel=0':a.url;
+      videosHtml+='<div style="margin-bottom:14px;"><div class="aula-titulo">'+(i+1)+'. '+a.titulo+'</div>';
+      if(ytId||a.url.includes('youtube')||a.url.includes('youtu.be')){
+        videosHtml+='<div class="video-wrap"><iframe src="'+embedSrc+'" allowfullscreen loading="lazy"></iframe></div>';
+      } else {
+        videosHtml+='<a href="'+a.url+'" target="_blank" style="display:inline-block;padding:8px 16px;background:#1A1A1F;border:1px solid #35353f;border-radius:8px;color:#00BFFF;font-size:13px;text-decoration:none;">▶ Assistir vídeo</a>';
+      }
+      videosHtml+='</div>';
+    });
+    videosHtml+='</div>';
+  }
+
+  var pdfsHtml='';
+  if(pdfs.length){
+    pdfsHtml='<div style="margin-bottom:1.5rem;"><div style="font-size:12px;font-weight:600;color:#4A4A5A;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px;">Apostilas ('+pdfs.length+')</div>';
+    pdfs.forEach(function(a){
+      pdfsHtml+='<a href="'+a.url+'" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#1A1A1F;border:1px solid #35353f;border-radius:8px;text-decoration:none;margin-bottom:8px;"><span style="font-size:18px;">📄</span><span style="font-size:13px;color:#F0F0F5;">'+a.titulo+'</span><span style="margin-left:auto;font-size:11px;color:#00BFFF;">⬇ Baixar</span></a>';
+    });
+    pdfsHtml+='</div>';
+  }
+
+  if(!videos.length&&!pdfs.length){
+    videosHtml='<div class="sem-aulas">📭 Nenhum conteúdo adicionado ainda para este módulo.<br><span style="font-size:11px;margin-top:6px;display:block;">O administrador ainda não publicou aulas aqui.</span></div>';
+  }
+
+  var progHtml='<div style="font-size:12px;font-weight:600;color:#4A4A5A;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px;">Marcar progresso</div>'
+    +'<div class="prog-botoes">'
+    +[0,25,50,75,100].map(function(v){return '<button class="prog-btn'+(cur===v?' ativo':'')+'" onclick="salvarProgresso('+id+','+v+');fecharOverlay()">'+v+'%</button>';}).join('')
+    +'</div>';
+
+  abrirOverlay(
+    m.titulo,
+    videosHtml+pdfsHtml+progHtml
+  );
+}
+
+function extrairYoutubeId(url){
+  if(!url) return null;
+  var m=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/);
+  return m?m[1]:null;
+}
+
+function abrirOverlay(titulo,corpo){
+  fecharOverlay();
+  var ov=document.createElement('div');
+  ov.id='overlay-principal';
+  ov.className='overlay';
+  ov.innerHTML='<div class="overlay-box"><div class="overlay-header"><div class="overlay-titulo">'+titulo+'</div><button class="btn-close" onclick="fecharOverlay()">✕</button></div>'+corpo+'<button class="btn btn-ghost" style="width:100%;margin-top:8px;" onclick="fecharOverlay()">Fechar</button></div>';
+  ov.addEventListener('click',function(e){if(e.target===ov)fecharOverlay();});
+  document.body.appendChild(ov);
+}
+function fecharOverlay(){var o=document.getElementById('overlay-principal');if(o)o.remove();}
+
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape') fecharOverlay();
+  if(e.key==='Enter'&&document.getElementById('tela-login').style.display!=='none') autenticar();
+});
+</script>
+</body>
+</html>
