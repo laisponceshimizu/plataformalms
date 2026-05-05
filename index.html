@@ -26,8 +26,6 @@ select option{background:#1A1A1F;}
 .btn-primary:disabled{opacity:.5;cursor:default;}
 .btn-ghost{background:none;border:1px solid #35353f;color:#8A8A9A;}
 .btn-ghost:hover{border-color:#00BFFF;color:#00BFFF;}
-.btn-danger{background:none;border:1px solid rgba(248,113,113,.3);color:#f87171;}
-.btn-danger:hover{background:rgba(248,113,113,.1);}
 .btn-full{width:100%;margin-top:14px;}
 .msg{padding:10px 12px;border-radius:8px;font-size:13px;margin-top:10px;display:none;}
 .msg.erro{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);color:#f87171;}
@@ -59,23 +57,53 @@ select option{background:#1A1A1F;}
 .mod-sub{font-size:11px;color:#8A8A9A;margin-top:2px;}
 .mod-pct{font-size:12px;color:#00BFFF;font-weight:600;}
 .progbar{height:4px;background:#222228;border-radius:4px;margin-top:6px;overflow:hidden;}
-.progbar-fill{height:100%;background:#00BFFF;border-radius:4px;}
+.progbar-fill{height:100%;background:#00BFFF;border-radius:4px;transition:width .4s;}
+
 /* OVERLAY */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:999;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:2rem 1rem;}
 .overlay-box{background:#141417;border:1px solid #35353f;border-radius:14px;padding:2rem;width:100%;max-width:720px;}
 .overlay-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
 .overlay-titulo{font-size:17px;font-weight:700;}
 .btn-close{background:none;border:none;color:#8A8A9A;font-size:22px;cursor:pointer;line-height:1;}
-.video-wrap{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:10px;background:#000;margin-bottom:12px;}
+
+/* AULA CARD */
+.aula-card{background:#1A1A1F;border:1px solid #252530;border-radius:10px;margin-bottom:12px;overflow:hidden;transition:border-color .15s;}
+.aula-card.concluida{border-color:rgba(34,197,94,.3);}
+.aula-card-header{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;}
+.aula-card-header:hover{background:#222228;}
+.aula-check{width:22px;height:22px;border-radius:50%;border:2px solid #35353f;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;transition:all .2s;}
+.aula-check.ok{background:rgba(34,197,94,.15);border-color:#22C55E;color:#22C55E;}
+.aula-nome{font-size:13px;flex:1;color:#C5DCEF;}
+.aula-badge{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600;flex-shrink:0;}
+.aula-badge.assistindo{background:rgba(0,191,255,.1);color:#00BFFF;border:1px solid rgba(0,191,255,.2);}
+.aula-badge.concluida-badge{background:rgba(34,197,94,.1);color:#22C55E;border:1px solid rgba(34,197,94,.2);}
+.aula-video-wrap{display:none;padding:0 14px 14px;}
+.aula-video-wrap.aberto{display:block;}
+.video-wrap{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:10px;background:#000;}
 .video-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none;}
-.aula-titulo{font-size:12px;color:#8A8A9A;margin-bottom:6px;}
-.prog-botoes{display:flex;gap:8px;margin-bottom:1.25rem;}
-.prog-btn{flex:1;padding:8px 4px;background:#222228;color:#8A8A9A;border:1px solid #35353f;border-radius:7px;font-size:13px;cursor:pointer;}
-.prog-btn.ativo{background:#00BFFF;color:#000;font-weight:700;}
+.video-concluido-banner{display:none;align-items:center;gap:8px;padding:10px 14px;background:rgba(34,197,94,.08);border-top:1px solid rgba(34,197,94,.2);font-size:12px;color:#22C55E;font-weight:600;}
+.video-concluido-banner.show{display:flex;}
+
 .sem-aulas{text-align:center;padding:2rem;color:#4A4A5A;font-size:13px;}
+.sec-label{font-size:11px;font-weight:600;color:#4A4A5A;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px;margin-top:4px;}
+
+/* PROGRESSO DO MÓDULO */
+.mod-progresso-wrap{background:#1A1A1F;border:1px solid #252530;border-radius:10px;padding:14px;margin-top:8px;}
+.mod-prog-topo{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.mod-prog-label{font-size:12px;color:#8A8A9A;}
+.mod-prog-pct{font-size:14px;font-weight:700;color:#00BFFF;}
+.mod-prog-bar{height:6px;background:#252530;border-radius:4px;overflow:hidden;}
+.mod-prog-fill{height:100%;background:#00BFFF;border-radius:4px;transition:width .5s;}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:#22C55E;color:#000;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;z-index:9999;transform:translateY(100px);opacity:0;transition:all .3s;display:flex;align-items:center;gap:8px;}
+.toast.show{transform:translateY(0);opacity:1;}
 </style>
 </head>
 <body>
+
+<!-- YouTube IFrame API -->
+<script src="https://www.youtube.com/iframe_api"></script>
 
 <div id="tela-login">
   <div class="login-box">
@@ -117,30 +145,35 @@ select option{background:#1A1A1F;}
   </div>
 </div>
 
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
 <script>
 const URL_SB = 'https://bnysqxhhbajdxwputaea.supabase.co';
 const KEY_SB = 'sb_publishable_aqIlZf8t8VnJyPT-9j1MTw_6Wa5QcRy';
 
-const MODULOS = [
-  {id:1, titulo:'Dashboard — Visão Inicial'},
-  {id:2, titulo:'Cadastro e configuração de veículos'},
-  {id:3, titulo:'Rastreamento em tempo real'},
-  {id:4, titulo:'Relatórios e telemetria'},
-  {id:5, titulo:'Alertas e eventos críticos'},
-  {id:6, titulo:'Jornada de trabalho e motoristas'},
-  {id:7, titulo:'Gestão de multas e infrações'},
-  {id:8, titulo:'Integração com Power BI'},
-];
-
 let sb, modoAtual='entrar', usuarioAtual=null, progressoUsuario={}, aulasCache={};
+let todosModulos=[];
 
+// ── controle de players YouTube
+let ytPlayers={};         // ytPlayerId → player
+let aulasConcluidasSet={}; // "moduleId_aulaId" → true
+
+// ── YouTube IFrame API callback (chamado automaticamente quando a API carrega)
+window.onYouTubeIframeAPIReady = function(){};
+
+// ── INIT
 window.onload = function() {
   if (!window.supabase) return;
   sb = window.supabase.createClient(URL_SB, KEY_SB);
   sb.auth.getSession().then(function(r){ if(r.data.session) entrarNoApp(r.data.session.user); });
-  sb.auth.onAuthStateChange(function(ev,s){ if(ev==='SIGNED_IN'&&s) entrarNoApp(s.user); if(ev==='SIGNED_OUT') voltarLogin(); });
+  sb.auth.onAuthStateChange(function(ev,s){
+    if(ev==='SIGNED_IN'&&s) entrarNoApp(s.user);
+    if(ev==='SIGNED_OUT') voltarLogin();
+  });
 };
 
+// ── AUTH
 function trocarAba(m) {
   modoAtual=m;
   document.getElementById('aba-entrar').className='aba'+(m==='entrar'?' ativa':'');
@@ -187,88 +220,301 @@ async function entrarNoApp(user) {
   document.getElementById('primeiro-nome').textContent=nome.split(' ')[0];
   document.getElementById('tela-login').style.display='none';
   document.getElementById('tela-app').style.display='block';
+  await carregarModulos();
   await carregarProgresso();
+  await carregarAulasConcluidas();
   renderizarModulos();
 }
-function voltarLogin(){usuarioAtual=null;progressoUsuario={};aulasCache={};document.getElementById('tela-app').style.display='none';document.getElementById('tela-login').style.display='flex';document.getElementById('btn-principal').disabled=false;document.getElementById('btn-principal').textContent='Entrar';}
+function voltarLogin(){
+  usuarioAtual=null;progressoUsuario={};aulasCache={};aulasConcluidasSet={};ytPlayers={};
+  document.getElementById('tela-app').style.display='none';
+  document.getElementById('tela-login').style.display='flex';
+  document.getElementById('btn-principal').disabled=false;
+  document.getElementById('btn-principal').textContent='Entrar';
+}
 async function sair(){await sb.auth.signOut();}
-async function carregarProgresso(){try{var r=await sb.from('progress').select('*').eq('user_id',usuarioAtual.id);progressoUsuario={};(r.data||[]).forEach(function(x){progressoUsuario[x.module_id]=x;});}catch(e){}}
-async function salvarProgresso(mid,pct){var done=pct>=100;await sb.from('progress').upsert({user_id:usuarioAtual.id,module_id:mid,percent:pct,completed:done,updated_at:new Date().toISOString()},{onConflict:'user_id,module_id'});await carregarProgresso();renderizarModulos();}
+
+// ── CARREGAR MÓDULOS do Supabase
+async function carregarModulos(){
+  try{
+    var r=await sb.from('modulos').select('*').eq('ativo',true).order('ordem');
+    todosModulos=(r.data&&r.data.length)?r.data:MODULOS_FALLBACK;
+  }catch(e){todosModulos=MODULOS_FALLBACK;}
+}
+
+// fallback caso a tabela modulos não exista ainda
+var MODULOS_FALLBACK=[
+  {id:1,titulo:'Dashboard — Visão Inicial',emoji:'📡'},
+  {id:2,titulo:'Cadastro e configuração de veículos',emoji:'🚗'},
+  {id:3,titulo:'Rastreamento em tempo real',emoji:'🗺️'},
+  {id:4,titulo:'Relatórios e telemetria',emoji:'📊'},
+  {id:5,titulo:'Alertas e eventos críticos',emoji:'🚨'},
+  {id:6,titulo:'Jornada de trabalho e motoristas',emoji:'👷'},
+  {id:7,titulo:'Gestão de multas e infrações',emoji:'📋'},
+  {id:8,titulo:'Integração com Power BI',emoji:'📈'},
+];
+
+// ── PROGRESSO
+async function carregarProgresso(){
+  try{
+    var r=await sb.from('progress').select('*').eq('user_id',usuarioAtual.id);
+    progressoUsuario={};
+    (r.data||[]).forEach(function(x){progressoUsuario[x.module_id]=x;});
+  }catch(e){}
+}
+
+// ── AULAS CONCLUÍDAS (tabela separada: aulas_concluidas)
+async function carregarAulasConcluidas(){
+  try{
+    var r=await sb.from('aulas_concluidas').select('*').eq('user_id',usuarioAtual.id);
+    aulasConcluidasSet={};
+    (r.data||[]).forEach(function(x){
+      aulasConcluidasSet[x.module_id+'_'+x.aula_id]=true;
+    });
+  }catch(e){aulasConcluidasSet={};}
+}
+
+async function marcarAulaConcluida(moduleId, aulaId){
+  var key=moduleId+'_'+aulaId;
+  if(aulasConcluidasSet[key]) return; // já concluída
+  aulasConcluidasSet[key]=true;
+
+  // salvar no banco
+  try{
+    await sb.from('aulas_concluidas').upsert(
+      {user_id:usuarioAtual.id, module_id:moduleId, aula_id:aulaId},
+      {onConflict:'user_id,module_id,aula_id'}
+    );
+  }catch(e){}
+
+  // recalcular progresso do módulo
+  await recalcularProgresso(moduleId);
+}
+
+async function recalcularProgresso(moduleId){
+  var aulas=aulasCache[moduleId]||[];
+  var videos=aulas.filter(function(a){return a.tipo==='video';});
+  if(!videos.length) return;
+
+  var concluidos=videos.filter(function(a){
+    return aulasConcluidasSet[moduleId+'_'+a.id];
+  }).length;
+
+  var pct=Math.round((concluidos/videos.length)*100);
+  var done=pct>=100;
+
+  await sb.from('progress').upsert(
+    {user_id:usuarioAtual.id, module_id:moduleId, percent:pct, completed:done, updated_at:new Date().toISOString()},
+    {onConflict:'user_id,module_id'}
+  );
+
+  progressoUsuario[moduleId]={percent:pct,completed:done};
+  renderizarModulos();
+
+  // atualizar barra de progresso dentro do overlay (se estiver aberto)
+  var fillEl=document.getElementById('prog-fill-'+moduleId);
+  var pctEl=document.getElementById('prog-pct-'+moduleId);
+  if(fillEl) fillEl.style.width=pct+'%';
+  if(pctEl) pctEl.textContent=pct+'%';
+
+  if(done){
+    mostrarToast('🎉 Módulo concluído!');
+  } else {
+    mostrarToast('✅ Aula concluída! '+pct+'% do módulo');
+  }
+}
+
 function getPct(id){return progressoUsuario[id]?progressoUsuario[id].percent:0;}
 function getConcluido(id){return !!(progressoUsuario[id]&&progressoUsuario[id].completed);}
-function getDesbloq(id){if(id<=2)return true;return getConcluido(id-1);}
+function getDesbloq(id,idx){if(idx<=1)return true;return getConcluido(todosModulos[idx-2].id);}
 
+// ── RENDER LISTA DE MÓDULOS
 function renderizarModulos(){
-  var conc=MODULOS.filter(function(m){return getConcluido(m.id);}).length;
-  var pg=Math.round(MODULOS.reduce(function(a,m){return a+getPct(m.id);},0)/MODULOS.length);
+  var total=todosModulos.length;
+  var conc=todosModulos.filter(function(m){return getConcluido(m.id);}).length;
+  var pg=total?Math.round(todosModulos.reduce(function(a,m){return a+getPct(m.id);},0)/total):0;
   document.getElementById('s-concluidos').textContent=conc;
   document.getElementById('s-progresso').textContent=pg+'%';
-  document.getElementById('s-certs').textContent=conc>=4?1:0;
+  document.getElementById('s-certs').textContent=conc>=Math.ceil(total/2)?1:0;
+
   var html='';
-  MODULOS.forEach(function(m){
-    var pct=getPct(m.id), done=getConcluido(m.id), desbloq=getDesbloq(m.id);
+  todosModulos.forEach(function(m,i){
+    var pct=getPct(m.id), done=getConcluido(m.id), desbloq=getDesbloq(m.id,i);
     var nc=done?'mod-num concluido':desbloq?'mod-num':'mod-num bloq';
     var bc=desbloq?'modulo':'modulo bloqueado';
     var botao=desbloq?'<button onclick="event.stopPropagation();abrirModulo('+m.id+')" style="background:'+(done?'#222228':'#00BFFF')+';color:'+(done?'#8A8A9A':'#000')+';border:none;border-radius:7px;padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;">'+(done?'Revisitar':'Continuar ▶')+'</button>':'';
     var barra=pct>0?'<div class="progbar"><div class="progbar-fill" style="width:'+pct+'%"></div></div>':'';
-    html+='<div class="'+bc+'" onclick="'+(desbloq?'abrirModulo('+m.id+')':'')+'"><div class="'+nc+'">'+(done?'✓':m.id)+'</div><div class="mod-info"><div class="mod-titulo">'+m.titulo+'</div><div class="mod-sub">'+(done?'Concluído':pct>0?pct+'% concluído':'Não iniciado')+'</div>'+barra+'</div><div class="mod-pct">'+(done?'':pct+'%')+'</div>'+botao+'</div>';
+    var numConteudo=done?'✓':(m.emoji||i+1);
+    html+='<div class="'+bc+'" onclick="'+(desbloq?'abrirModulo('+m.id+')':'')+'">'
+      +'<div class="'+nc+'">'+numConteudo+'</div>'
+      +'<div class="mod-info">'
+      +'<div class="mod-titulo">'+m.titulo+'</div>'
+      +'<div class="mod-sub">'+(done?'Concluído':pct>0?pct+'% concluído':'Não iniciado')+'</div>'
+      +barra
+      +'</div>'
+      +'<div class="mod-pct">'+(done?'':pct+'%')+'</div>'
+      +botao
+      +'</div>';
   });
   document.getElementById('lista-modulos').innerHTML=html;
 }
 
+// ── ABRIR MÓDULO
 async function abrirModulo(id) {
-  var m=MODULOS.find(function(x){return x.id===id;});
-  var cur=getPct(id);
-  // Busca aulas do Supabase (cache)
-  var aulas=aulasCache[id];
-  if(!aulas){
-    try{var r=await sb.from('aulas').select('*').eq('module_id',id).eq('ativo',true).order('ordem');aulas=r.data||[];}catch(e){aulas=[];}
-    aulasCache[id]=aulas;
+  var m=todosModulos.find(function(x){return x.id===id;});
+
+  // buscar aulas (cache)
+  if(!aulasCache[id]){
+    try{
+      var r=await sb.from('aulas').select('*').eq('module_id',id).eq('ativo',true).order('ordem');
+      aulasCache[id]=r.data||[];
+    }catch(e){aulasCache[id]=[];}
   }
+  var aulas=aulasCache[id];
   var videos=aulas.filter(function(a){return a.tipo==='video';});
   var pdfs=aulas.filter(function(a){return a.tipo==='pdf';});
+  var pct=getPct(id);
 
+  // ── HTML dos vídeos com player automático
   var videosHtml='';
   if(videos.length){
-    videosHtml='<div style="margin-bottom:1.5rem;"><div style="font-size:12px;font-weight:600;color:#4A4A5A;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px;">Vídeos ('+videos.length+')</div>';
+    videosHtml+='<div class="sec-label">Vídeos ('+videos.length+')</div>';
     videos.forEach(function(a,i){
       var ytId=extrairYoutubeId(a.url);
-      var embedSrc=ytId?'https://www.youtube.com/embed/'+ytId+'?rel=0':a.url;
-      videosHtml+='<div style="margin-bottom:14px;"><div class="aula-titulo">'+(i+1)+'. '+a.titulo+'</div>';
-      if(ytId||a.url.includes('youtube')||a.url.includes('youtu.be')){
-        videosHtml+='<div class="video-wrap"><iframe src="'+embedSrc+'" allowfullscreen loading="lazy"></iframe></div>';
+      var concluida=!!aulasConcluidasSet[id+'_'+a.id];
+      var playerId='yt_'+id+'_'+a.id;
+
+      videosHtml+='<div class="aula-card'+(concluida?' concluida':'')+'" id="card_'+playerId+'">';
+      // cabeçalho clicável
+      videosHtml+='<div class="aula-card-header" onclick="toggleAula(\''+playerId+'\')">'
+        +'<div class="aula-check'+(concluida?' ok':'')+'" id="check_'+playerId+'">'+(concluida?'✓':'')+'</div>'
+        +'<div class="aula-nome">'+(i+1)+'. '+a.titulo+'</div>'
+        +(concluida?'<span class="aula-badge concluida-badge">✓ Concluída</span>':'<span class="aula-badge assistindo" id="badge_'+playerId+'">▶ Assistir</span>')
+        +'</div>';
+
+      // player (expandível)
+      videosHtml+='<div class="aula-video-wrap" id="wrap_'+playerId+'">';
+      if(ytId){
+        // div que será substituída pelo player YT
+        videosHtml+='<div class="video-wrap"><div id="'+playerId+'"></div></div>';
       } else {
-        videosHtml+='<a href="'+a.url+'" target="_blank" style="display:inline-block;padding:8px 16px;background:#1A1A1F;border:1px solid #35353f;border-radius:8px;color:#00BFFF;font-size:13px;text-decoration:none;">▶ Assistir vídeo</a>';
+        videosHtml+='<a href="'+a.url+'" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:10px 16px;background:#1A1A1F;border:1px solid #35353f;border-radius:8px;color:#00BFFF;font-size:13px;text-decoration:none;margin-bottom:10px;">▶ Abrir vídeo</a>';
       }
-      videosHtml+='</div>';
+      // banner de concluído
+      videosHtml+='<div class="video-concluido-banner'+(concluida?' show':'')+'" id="banner_'+playerId+'">✅ Aula concluída automaticamente!</div>';
+      videosHtml+='</div>'; // wrap
+
+      videosHtml+='</div>'; // card
     });
-    videosHtml+='</div>';
   }
 
+  // ── HTML dos PDFs
   var pdfsHtml='';
   if(pdfs.length){
-    pdfsHtml='<div style="margin-bottom:1.5rem;"><div style="font-size:12px;font-weight:600;color:#4A4A5A;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px;">Apostilas ('+pdfs.length+')</div>';
+    pdfsHtml+='<div class="sec-label" style="margin-top:1rem;">Apostilas ('+pdfs.length+')</div>';
     pdfs.forEach(function(a){
-      pdfsHtml+='<a href="'+a.url+'" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#1A1A1F;border:1px solid #35353f;border-radius:8px;text-decoration:none;margin-bottom:8px;"><span style="font-size:18px;">📄</span><span style="font-size:13px;color:#F0F0F5;">'+a.titulo+'</span><span style="margin-left:auto;font-size:11px;color:#00BFFF;">⬇ Baixar</span></a>';
+      pdfsHtml+='<a href="'+a.url+'" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#1A1A1F;border:1px solid #35353f;border-radius:8px;text-decoration:none;margin-bottom:8px;">'
+        +'<span style="font-size:18px;">📄</span>'
+        +'<span style="font-size:13px;color:#F0F0F5;">'+a.titulo+'</span>'
+        +'<span style="margin-left:auto;font-size:11px;color:#00BFFF;">⬇ Baixar</span>'
+        +'</a>';
     });
-    pdfsHtml+='</div>';
   }
 
   if(!videos.length&&!pdfs.length){
     videosHtml='<div class="sem-aulas">📭 Nenhum conteúdo adicionado ainda para este módulo.<br><span style="font-size:11px;margin-top:6px;display:block;">O administrador ainda não publicou aulas aqui.</span></div>';
   }
 
-  var progHtml='<div style="font-size:12px;font-weight:600;color:#4A4A5A;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px;">Marcar progresso</div>'
-    +'<div class="prog-botoes">'
-    +[0,25,50,75,100].map(function(v){return '<button class="prog-btn'+(cur===v?' ativo':'')+'" onclick="salvarProgresso('+id+','+v+');fecharOverlay()">'+v+'%</button>';}).join('')
+  // ── barra de progresso do módulo
+  var progHtml='<div class="mod-progresso-wrap" style="margin-top:1.25rem;">'
+    +'<div class="mod-prog-topo">'
+    +'<span class="mod-prog-label">Progresso do módulo</span>'
+    +'<span class="mod-prog-pct" id="prog-pct-'+id+'">'+pct+'%</span>'
+    +'</div>'
+    +'<div class="mod-prog-bar"><div class="mod-prog-fill" id="prog-fill-'+id+'" style="width:'+pct+'%"></div></div>'
+    +(videos.length?'<div style="font-size:11px;color:#4A4A5A;margin-top:6px;">Progresso calculado automaticamente ao concluir cada vídeo</div>':'')
     +'</div>';
 
-  abrirOverlay(
-    m.titulo,
-    videosHtml+pdfsHtml+progHtml
-  );
+  abrirOverlay(m.titulo, videosHtml+pdfsHtml+progHtml);
+
+  // ── inicializar players YouTube após render
+  if(videos.length){
+    setTimeout(function(){
+      videos.forEach(function(a){
+        var ytId=extrairYoutubeId(a.url);
+        if(!ytId) return;
+        var playerId='yt_'+id+'_'+a.id;
+        // só cria o player se o wrap estiver visível ou após abrir
+        criarYTPlayer(playerId, ytId, id, a.id);
+      });
+    }, 300);
+  }
 }
 
+// ── TOGGLE abrir/fechar aula
+function toggleAula(playerId){
+  var wrap=document.getElementById('wrap_'+playerId);
+  if(!wrap) return;
+  var aberto=wrap.classList.contains('aberto');
+  // fechar todos os outros
+  document.querySelectorAll('.aula-video-wrap.aberto').forEach(function(el){
+    if(el.id!=='wrap_'+playerId) el.classList.remove('aberto');
+  });
+  if(aberto){
+    wrap.classList.remove('aberto');
+  } else {
+    wrap.classList.add('aberto');
+    // pausar outros players
+    Object.keys(ytPlayers).forEach(function(pid){
+      if(pid!==playerId && ytPlayers[pid] && ytPlayers[pid].pauseVideo){
+        try{ytPlayers[pid].pauseVideo();}catch(e){}
+      }
+    });
+  }
+}
+
+// ── CRIAR PLAYER YOUTUBE com detecção de fim
+function criarYTPlayer(playerId, ytId, moduleId, aulaId){
+  if(!window.YT||!window.YT.Player){
+    // YT ainda não carregou, tentar depois
+    setTimeout(function(){criarYTPlayer(playerId,ytId,moduleId,aulaId);},500);
+    return;
+  }
+  var el=document.getElementById(playerId);
+  if(!el) return;
+  if(ytPlayers[playerId]) return; // já criado
+
+  ytPlayers[playerId]=new YT.Player(playerId,{
+    videoId: ytId,
+    playerVars:{rel:0, modestbranding:1},
+    events:{
+      onStateChange: function(event){
+        // YT.PlayerState.ENDED = 0
+        if(event.data===0){
+          onVideoTerminou(moduleId, aulaId, playerId);
+        }
+      }
+    }
+  });
+}
+
+// ── QUANDO VÍDEO TERMINA
+async function onVideoTerminou(moduleId, aulaId, playerId){
+  // mostrar banner de concluído
+  var banner=document.getElementById('banner_'+playerId);
+  var check=document.getElementById('check_'+playerId);
+  var badge=document.getElementById('badge_'+playerId);
+  var card=document.getElementById('card_'+playerId);
+
+  if(banner) banner.classList.add('show');
+  if(check){check.classList.add('ok');check.textContent='✓';}
+  if(badge){badge.className='aula-badge concluida-badge';badge.textContent='✓ Concluída';}
+  if(card) card.classList.add('concluida');
+
+  await marcarAulaConcluida(moduleId, aulaId);
+}
+
+// ── HELPERS
 function extrairYoutubeId(url){
   if(!url) return null;
   var m=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/);
@@ -277,14 +523,37 @@ function extrairYoutubeId(url){
 
 function abrirOverlay(titulo,corpo){
   fecharOverlay();
+  ytPlayers={};
   var ov=document.createElement('div');
   ov.id='overlay-principal';
   ov.className='overlay';
-  ov.innerHTML='<div class="overlay-box"><div class="overlay-header"><div class="overlay-titulo">'+titulo+'</div><button class="btn-close" onclick="fecharOverlay()">✕</button></div>'+corpo+'<button class="btn btn-ghost" style="width:100%;margin-top:8px;" onclick="fecharOverlay()">Fechar</button></div>';
+  ov.innerHTML='<div class="overlay-box">'
+    +'<div class="overlay-header">'
+    +'<div class="overlay-titulo">'+titulo+'</div>'
+    +'<button class="btn-close" onclick="fecharOverlay()">✕</button>'
+    +'</div>'
+    +corpo
+    +'<button class="btn btn-ghost" style="width:100%;margin-top:1rem;" onclick="fecharOverlay()">Fechar</button>'
+    +'</div>';
   ov.addEventListener('click',function(e){if(e.target===ov)fecharOverlay();});
   document.body.appendChild(ov);
 }
-function fecharOverlay(){var o=document.getElementById('overlay-principal');if(o)o.remove();}
+function fecharOverlay(){
+  // destruir players antes de remover o DOM
+  Object.keys(ytPlayers).forEach(function(pid){
+    try{if(ytPlayers[pid]&&ytPlayers[pid].destroy)ytPlayers[pid].destroy();}catch(e){}
+  });
+  ytPlayers={};
+  var o=document.getElementById('overlay-principal');
+  if(o) o.remove();
+}
+
+function mostrarToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},3000);
+}
 
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape') fecharOverlay();
