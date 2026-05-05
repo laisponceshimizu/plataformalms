@@ -30,27 +30,33 @@ textarea{resize:vertical;min-height:60px;}
 .btn-danger{background:none;border:1px solid rgba(248,113,113,.3);color:#f87171;padding:5px 12px;font-size:12px;}
 .btn-danger:hover{background:rgba(248,113,113,.1);}
 .btn-full{width:100%;margin-top:12px;justify-content:center;}
+.btn-sm{padding:5px 12px;font-size:12px;}
 .separador{display:flex;align-items:center;gap:10px;margin:14px 0;}
 .separador hr{flex:1;border:none;border-top:1px solid #252530;}
 .separador span{font-size:11px;color:#4A4A5A;}
 .msg-erro{padding:10px;border-radius:8px;font-size:12px;margin-top:10px;display:none;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);color:#f87171;}
+.msg-ok{padding:10px;border-radius:8px;font-size:12px;margin-top:10px;display:none;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:#22C55E;}
+
 /* TOPBAR */
 .topbar{background:#141417;border-bottom:1px solid #252530;padding:.875rem 1.5rem;display:flex;align-items:center;justify-content:space-between;}
 .topbar-logo{font-size:15px;font-weight:700;}
 .topbar-logo span{color:#F59E0B;}
 .btn-sair{background:none;border:1px solid #35353f;color:#8A8A9A;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:12px;}
 .btn-sair:hover{color:#f87171;border-color:#f87171;}
+
 /* NAV ABAS */
 .nav-abas{display:flex;gap:4px;margin-bottom:1.5rem;background:#141417;border:1px solid #252530;border-radius:10px;padding:4px;width:fit-content;}
 .nav-aba{padding:7px 18px;border-radius:8px;font-size:13px;cursor:pointer;color:#8A8A9A;}
 .nav-aba.ativa{background:#1A2840;color:#00BFFF;font-weight:500;}
 .conteudo{padding:1.5rem;max-width:1100px;margin:0 auto;}
+
 /* STATS */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.5rem;}
 .stat{background:#141417;border:1px solid #252530;border-radius:12px;padding:1rem;}
 .stat-n{font-size:26px;font-weight:700;}
 .azul{color:#00BFFF;} .verde{color:#22C55E;} .amber{color:#F59E0B;} .roxo{color:#a78bfa;}
 .stat-l{font-size:12px;color:#8A8A9A;margin-top:4px;}
+
 /* TABELA CLIENTES */
 .tabela-wrap{background:#141417;border:1px solid #252530;border-radius:12px;overflow:hidden;margin-bottom:1.5rem;}
 .tabela-header{display:grid;grid-template-columns:2fr 1.5fr 1fr 80px 80px 90px;padding:.625rem 1.25rem;background:#0F1929;border-bottom:1px solid #252530;}
@@ -73,12 +79,14 @@ textarea{resize:vertical;min-height:60px;}
 .btn-ver{background:none;border:1px solid #35353f;color:#8A8A9A;padding:4px 12px;border-radius:6px;cursor:pointer;font-size:11px;}
 .btn-ver:hover{border-color:#00BFFF;color:#00BFFF;}
 .loading-msg{padding:2rem;text-align:center;color:#4A4A5A;font-size:13px;}
+
 /* MÓDULOS TABLE */
 .mod-tabela{width:100%;border-collapse:collapse;}
 .mod-tabela th{font-size:11px;color:#4A4A5A;font-weight:600;text-transform:uppercase;letter-spacing:.4px;padding:.5rem 1.25rem;text-align:left;border-bottom:1px solid #252530;background:#0F1929;}
 .mod-tabela td{font-size:13px;padding:.625rem 1.25rem;border-bottom:1px solid #1A1A1F;color:#F0F0F5;}
 .mod-tabela tr:last-child td{border-bottom:none;}
 .mod-tabela tr:hover td{background:#1A1A1F;}
+
 /* CONTEUDO MODULOS */
 .sec-titulo{font-size:15px;font-weight:600;margin-bottom:1rem;}
 .modulos-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:1.5rem;}
@@ -93,11 +101,35 @@ textarea{resize:vertical;min-height:60px;}
 .aula-tipo{font-size:14px;flex-shrink:0;}
 .aula-titulo-txt{font-size:12px;flex:1;color:#C5DCEF;}
 .aula-sem{font-size:12px;color:#4A4A5A;padding:8px 0;}
+
+/* ── GESTÃO DE MÓDULOS ── */
+.modulos-lista{display:flex;flex-direction:column;gap:10px;margin-bottom:1.5rem;}
+.modulo-row{background:#141417;border:1px solid #252530;border-radius:12px;padding:1rem 1.25rem;display:flex;align-items:center;gap:12px;transition:border-color .15s;}
+.modulo-row:hover{border-color:#35353f;}
+.drag-handle{color:#4A4A5A;cursor:grab;font-size:16px;flex-shrink:0;user-select:none;}
+.drag-handle:active{cursor:grabbing;}
+.modulo-row.dragging{opacity:.4;border-color:#00BFFF;}
+.modulo-row.drag-over{border-color:#00BFFF;background:#0F1929;}
+.mod-emoji-preview{width:36px;height:36px;border-radius:8px;background:#1A1A1F;border:1px solid #252530;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.mod-info{flex:1;}
+.mod-titulo-row{font-size:14px;font-weight:600;color:#F0F0F5;}
+.mod-subtitulo{font-size:11px;color:#4A4A5A;margin-top:2px;}
+.mod-ordem-badge{background:#1A1A1F;border:1px solid #252530;color:#8A8A9A;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;flex-shrink:0;}
+.mod-acoes{display:flex;gap:6px;flex-shrink:0;}
+
+/* EMOJI PICKER */
+.emoji-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;max-height:180px;overflow-y:auto;margin-top:8px;}
+.emoji-opt{width:32px;height:32px;border-radius:6px;border:1px solid #252530;background:#1A1A1F;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:background .1s;}
+.emoji-opt:hover{background:#252530;}
+.emoji-opt.sel{background:#1A2840;border-color:#00BFFF;}
+.emoji-preview-box{width:40px;height:40px;border-radius:8px;background:#1A1A1F;border:1px solid #35353f;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+
 /* MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:999;display:none;align-items:center;justify-content:center;padding:1rem;}
 .modal-overlay.aberto{display:flex;}
-.modal-box{background:#141417;border:1px solid #35353f;border-radius:14px;padding:2rem;width:100%;max-width:460px;}
+.modal-box{background:#141417;border:1px solid #35353f;border-radius:14px;padding:2rem;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;}
 .modal-titulo{font-size:16px;font-weight:700;margin-bottom:1.25rem;}
+
 /* PAINEL DETALHE */
 #painel-detalhe{position:fixed;top:0;right:0;width:400px;height:100vh;background:#141417;border-left:1px solid #252530;z-index:998;display:none;flex-direction:column;overflow-y:auto;}
 .det-header{padding:1.25rem;border-bottom:1px solid #252530;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#141417;}
@@ -114,6 +146,11 @@ textarea{resize:vertical;min-height:60px;}
 .mod-det-row:last-child{border-bottom:none;}
 .mod-det-bar{height:3px;background:#222228;border-radius:3px;overflow:hidden;margin-top:3px;}
 .mod-det-fill{height:100%;background:#00BFFF;border-radius:3px;}
+
+/* toast */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:#22C55E;color:#000;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;z-index:9999;transform:translateY(100px);opacity:0;transition:all .3s;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.erro{background:#f87171;}
 </style>
 </head>
 <body>
@@ -149,8 +186,9 @@ textarea{resize:vertical;min-height:60px;}
     <div class="nav-abas">
       <div class="nav-aba ativa" onclick="trocarAba('visao',this)">Visão geral</div>
       <div class="nav-aba" onclick="trocarAba('clientes',this)">Clientes</div>
+      <div class="nav-aba" onclick="trocarAba('modulos-gestao',this)">📚 Módulos</div>
       <div class="nav-aba" onclick="trocarAba('conteudo',this)">📹 Conteúdo</div>
-      <div class="nav-aba" onclick="trocarAba('modulos',this)">Módulos</div>
+      <div class="nav-aba" onclick="trocarAba('modulos-stats',this)">Desempenho</div>
     </div>
 
     <!-- VISÃO GERAL -->
@@ -180,6 +218,20 @@ textarea{resize:vertical;min-height:60px;}
       </div>
     </div>
 
+    <!-- ══ GESTÃO DE MÓDULOS ══ -->
+    <div id="aba-modulos-gestao" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
+        <div>
+          <div class="sec-titulo" style="margin:0;">Gerenciar módulos</div>
+          <div style="font-size:12px;color:#4A4A5A;margin-top:3px;">Crie, edite, reordene e exclua os módulos do treinamento</div>
+        </div>
+        <button class="btn btn-primary" onclick="abrirModalModulo()">+ Novo módulo</button>
+      </div>
+      <div id="modulos-lista-gestao" class="modulos-lista">
+        <div class="loading-msg">Carregando módulos...</div>
+      </div>
+    </div>
+
     <!-- CONTEUDO -->
     <div id="aba-conteudo" style="display:none;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
@@ -190,7 +242,7 @@ textarea{resize:vertical;min-height:60px;}
     </div>
 
     <!-- MÓDULOS STATS -->
-    <div id="aba-modulos" style="display:none;">
+    <div id="aba-modulos-stats" style="display:none;">
       <div class="sec-titulo">Desempenho por módulo</div>
       <div class="tabela-wrap">
         <table class="mod-tabela">
@@ -198,6 +250,38 @@ textarea{resize:vertical;min-height:60px;}
           <tbody id="tabela-modulos"></tbody>
         </table>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: CRIAR / EDITAR MÓDULO ══ -->
+<div class="modal-overlay" id="modal-modulo">
+  <div class="modal-box">
+    <div class="modal-titulo" id="modal-modulo-titulo">+ Novo módulo</div>
+
+    <div style="display:flex;align-items:flex-end;gap:12px;">
+      <div style="flex:1;">
+        <label>Título do módulo</label>
+        <input type="text" id="mod-titulo" placeholder="Ex: Introdução ao sistema">
+      </div>
+      <div class="emoji-preview-box" id="emoji-preview-box">📡</div>
+    </div>
+
+    <label>Descrição curta (opcional)</label>
+    <input type="text" id="mod-desc" placeholder="Ex: Aprenda a navegar pela plataforma">
+
+    <label>Emoji do módulo</label>
+    <div class="emoji-grid" id="emoji-grid"></div>
+
+    <label style="margin-top:14px;">Ordem (posição na lista)</label>
+    <input type="number" id="mod-ordem" value="1" min="1">
+
+    <div class="msg-erro" id="mod-erro" style="margin-top:10px;"></div>
+    <div class="msg-ok" id="mod-ok" style="margin-top:10px;"></div>
+
+    <div style="display:flex;gap:10px;margin-top:1.25rem;">
+      <button class="btn btn-ghost" style="flex:1;justify-content:center;" onclick="fecharModalModulo()">Cancelar</button>
+      <button class="btn btn-primary" style="flex:1;justify-content:center;" id="btn-salvar-modulo" onclick="salvarModulo()">Salvar módulo</button>
     </div>
   </div>
 </div>
@@ -212,16 +296,7 @@ textarea{resize:vertical;min-height:60px;}
       <option value="pdf">📄 Apostila (PDF)</option>
     </select>
     <label>Módulo</label>
-    <select id="add-modulo">
-      <option value="1">Módulo 1 — Dashboard · Visão Inicial</option>
-      <option value="2">Módulo 2 — Cadastro e configuração de veículos</option>
-      <option value="3">Módulo 3 — Rastreamento em tempo real</option>
-      <option value="4">Módulo 4 — Relatórios e telemetria</option>
-      <option value="5">Módulo 5 — Alertas e eventos críticos</option>
-      <option value="6">Módulo 6 — Jornada de trabalho e motoristas</option>
-      <option value="7">Módulo 7 — Gestão de multas e infrações</option>
-      <option value="8">Módulo 8 — Integração com Power BI</option>
-    </select>
+    <select id="add-modulo"></select>
     <label>Título da aula</label>
     <input type="text" id="add-titulo" placeholder="Ex: Aula 1 — Visão geral do dashboard">
     <label>Link (YouTube ou PDF)</label>
@@ -245,18 +320,25 @@ textarea{resize:vertical;min-height:60px;}
   <div class="det-corpo" id="det-corpo"></div>
 </div>
 
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
 <script>
 const URL_SB='https://bnysqxhhbajdxwputaea.supabase.co';
 const KEY_SB='sb_publishable_aqIlZf8t8VnJyPT-9j1MTw_6Wa5QcRy';
-const MODULOS=[
-  {id:1,titulo:'Dashboard — Visão Inicial',emoji:'📡'},
-  {id:2,titulo:'Cadastro e configuração de veículos',emoji:'🚗'},
-  {id:3,titulo:'Rastreamento em tempo real',emoji:'🗺️'},
-  {id:4,titulo:'Relatórios e telemetria',emoji:'📊'},
-  {id:5,titulo:'Alertas e eventos críticos',emoji:'🚨'},
-  {id:6,titulo:'Jornada de trabalho e motoristas',emoji:'👷'},
-  {id:7,titulo:'Gestão de multas e infrações',emoji:'📋'},
-  {id:8,titulo:'Integração com Power BI',emoji:'📈'},
+
+const EMOJIS=['📡','🚗','🗺️','📊','🚨','👷','📋','📈','🏗️','🚛','⚙️','🔧','📱','💡','🎯','🔍','📌','🛣️','🚦','🏁','📝','✅','🎓','🔔','💼','🌐','🛡️','⚡','📷','🎥','🗂️','📂'];
+
+// ESTADO
+const DEMO_MODULOS=[
+  {id:1,titulo:'Dashboard — Visão Inicial',emoji:'📡',descricao:'Visão geral da plataforma',ordem:1},
+  {id:2,titulo:'Cadastro e configuração de veículos',emoji:'🚗',descricao:'Como cadastrar sua frota',ordem:2},
+  {id:3,titulo:'Rastreamento em tempo real',emoji:'🗺️',descricao:'Monitoramento ao vivo',ordem:3},
+  {id:4,titulo:'Relatórios e telemetria',emoji:'📊',descricao:'Análise de dados da frota',ordem:4},
+  {id:5,titulo:'Alertas e eventos críticos',emoji:'🚨',descricao:'Configuração de alertas',ordem:5},
+  {id:6,titulo:'Jornada de trabalho e motoristas',emoji:'👷',descricao:'Gestão de motoristas',ordem:6},
+  {id:7,titulo:'Gestão de multas e infrações',emoji:'📋',descricao:'Controle de infrações',ordem:7},
+  {id:8,titulo:'Integração com Power BI',emoji:'📈',descricao:'Dashboards avançados',ordem:8},
 ];
 const DEMO_USERS=[
   {user_id:'1',email:'joao@transportadora.com.br',full_name:'João Silva',created_at:'2026-01-10T09:00:00Z',avg_progress:80,modules_started:5,modules_done:3,last_activity:'2026-04-20T14:30:00Z'},
@@ -270,50 +352,92 @@ const DEMO_PROG=[
   {user_id:'1',module_id:1,percent:100,completed:true},{user_id:'1',module_id:2,percent:100,completed:true},
   {user_id:'1',module_id:3,percent:100,completed:true},{user_id:'1',module_id:4,percent:75,completed:false},
   {user_id:'2',module_id:1,percent:100,completed:true},{user_id:'2',module_id:2,percent:60,completed:false},
-  ...MODULOS.map(function(m){return{user_id:'3',module_id:m.id,percent:100,completed:true};}),
+  ...DEMO_MODULOS.map(function(m){return{user_id:'3',module_id:m.id,percent:100,completed:true};}),
   {user_id:'4',module_id:1,percent:40,completed:false},
   {user_id:'6',module_id:1,percent:100,completed:true},{user_id:'6',module_id:2,percent:100,completed:true},
   {user_id:'6',module_id:3,percent:80,completed:false},
 ];
 
-let sb=null,modoDemo=false,todosUsers=[],todosProg=[],todasAulas=[];
+let sb=null,modoDemo=false;
+let todosUsers=[],todosProg=[],todasAulas=[],todosModulos=[];
+let editandoModuloId=null,emojiSelecionado='📡';
+let dragSrc=null;
 
+// ── INIT
 window.onload=function(){
+  renderEmojiGrid();
   if(!window.supabase) return;
   sb=window.supabase.createClient(URL_SB,KEY_SB);
   sb.auth.getSession().then(function(r){if(r.data.session) entrarApp(r.data.session.user);});
 };
 
-function entrarDemo(){modoDemo=true;todosUsers=DEMO_USERS;todosProg=DEMO_PROG;todasAulas=[];document.getElementById('admin-email').textContent='Modo demonstração';document.getElementById('tela-login').style.display='none';document.getElementById('tela-app').style.display='block';renderizarTudo();renderizarConteudo();}
+// ── AUTH
+function entrarDemo(){
+  modoDemo=true;
+  todosUsers=DEMO_USERS;todosProg=DEMO_PROG;todasAulas=[];todosModulos=JSON.parse(JSON.stringify(DEMO_MODULOS));
+  document.getElementById('admin-email').textContent='Modo demonstração';
+  document.getElementById('tela-login').style.display='none';
+  document.getElementById('tela-app').style.display='block';
+  renderizarTudo();renderizarGestaoModulos();renderizarConteudo();
+}
 async function fazerLogin(){
   if(!sb){mostrarErroLogin('Servidor não conectado.');return;}
   var email=document.getElementById('inp-email').value.trim();
   var senha=document.getElementById('inp-senha').value;
   if(!email||!senha){mostrarErroLogin('Preencha todos os campos.');return;}
-  var btn=document.getElementById('btn-entrar');
-  btn.disabled=true;btn.textContent='Aguarde...';
-  try{var r=await sb.auth.signInWithPassword({email,password:senha});if(r.error)throw r.error;entrarApp(r.data.user);}
-  catch(e){mostrarErroLogin(e.message==='Invalid login credentials'?'E-mail ou senha incorretos.':e.message);btn.disabled=false;btn.textContent='Entrar com Supabase';}
-}
-async function entrarApp(user){document.getElementById('admin-email').textContent=user.email;document.getElementById('tela-login').style.display='none';document.getElementById('tela-app').style.display='block';await carregarDados();}
-function mostrarErroLogin(t){var e=document.getElementById('msg-erro');e.textContent=t;e.style.display='block';}
-async function sair(){if(!modoDemo&&sb)await sb.auth.signOut();modoDemo=false;document.getElementById('tela-app').style.display='none';document.getElementById('tela-login').style.display='flex';document.getElementById('btn-entrar').disabled=false;document.getElementById('btn-entrar').textContent='Entrar com Supabase';}
-
-async function carregarDados(){
-  if(modoDemo){renderizarTudo();await carregarAulas();renderizarConteudo();return;}
+  var btn=document.getElementById('btn-entrar');btn.disabled=true;btn.textContent='Aguarde...';
   try{
-    var[ur,pr,ar]=await Promise.all([
+    var r=await sb.auth.signInWithPassword({email,password:senha});
+    if(r.error)throw r.error;
+    entrarApp(r.data.user);
+  }catch(e){mostrarErroLogin(e.message==='Invalid login credentials'?'E-mail ou senha incorretos.':e.message);btn.disabled=false;btn.textContent='Entrar com Supabase';}
+}
+async function entrarApp(user){
+  document.getElementById('admin-email').textContent=user.email;
+  document.getElementById('tela-login').style.display='none';
+  document.getElementById('tela-app').style.display='block';
+  await carregarDados();
+}
+function mostrarErroLogin(t){var e=document.getElementById('msg-erro');e.textContent=t;e.style.display='block';}
+async function sair(){
+  if(!modoDemo&&sb)await sb.auth.signOut();
+  modoDemo=false;
+  document.getElementById('tela-app').style.display='none';
+  document.getElementById('tela-login').style.display='flex';
+  document.getElementById('btn-entrar').disabled=false;
+  document.getElementById('btn-entrar').textContent='Entrar com Supabase';
+}
+
+// ── CARREGAR DADOS
+async function carregarDados(){
+  if(modoDemo){renderizarTudo();await carregarAulas();renderizarGestaoModulos();renderizarConteudo();return;}
+  try{
+    var[ur,pr,ar,mr]=await Promise.all([
       sb.from('admin_user_progress').select('*'),
       sb.from('admin_module_progress').select('*'),
       sb.from('aulas').select('*').order('module_id').order('ordem'),
+      sb.from('modulos').select('*').order('ordem'),
     ]);
     todosUsers=ur.data||[];todosProg=pr.data||[];todasAulas=ar.data||[];
-  }catch(e){todosUsers=DEMO_USERS;todosProg=DEMO_PROG;todasAulas=[];}
-  renderizarTudo();renderizarConteudo();
+    todosModulos=(mr.data&&mr.data.length)?mr.data:JSON.parse(JSON.stringify(DEMO_MODULOS));
+  }catch(e){
+    todosUsers=DEMO_USERS;todosProg=DEMO_PROG;todasAulas=[];todosModulos=JSON.parse(JSON.stringify(DEMO_MODULOS));
+    mostrarToast('Usando dados de demonstração (verifique conexão)',true);
+  }
+  renderizarTudo();renderizarGestaoModulos();renderizarConteudo();
 }
 async function carregarAulas(){
   if(modoDemo){todasAulas=[];return;}
   try{var r=await sb.from('aulas').select('*').order('module_id').order('ordem');todasAulas=r.data||[];}catch(e){todasAulas=[];}
+}
+
+// ── TOAST
+function mostrarToast(msg,erro){
+  var t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast'+(erro?' erro':'');
+  setTimeout(function(){t.classList.add('show');},10);
+  setTimeout(function(){t.classList.remove('show');},3000);
 }
 
 // ── HELPERS
@@ -322,13 +446,14 @@ function pillStatus(s){if(s==='ativo')return'<span class="pill pill-ativo">● A
 function fmtData(d){if(!d)return'—';var dias=Math.floor((Date.now()-new Date(d))/86400000);if(dias===0)return'Hoje';if(dias===1)return'Ontem';if(dias<7)return dias+' dias atrás';return new Date(d).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit'});}
 function buildRows(users){
   if(!users.length)return'<div class="loading-msg">Nenhum cliente encontrado.</div>';
+  var totalMods=todosModulos.length||8;
   return users.map(function(u){
     var pct=u.avg_progress||0,st=getStatus(u),ini=(u.full_name||u.email)[0].toUpperCase();
     return'<div class="tabela-row" onclick="abrirDetalhe(\''+u.user_id+'\')">'
       +'<div class="td"><div class="cli-info"><div class="avatar">'+ini+'</div><div><div class="cli-nome">'+(u.full_name||'—')+'</div><div class="cli-email">'+u.email+'</div></div></div></div>'
       +'<div class="td muted">'+fmtData(u.last_activity)+'</div>'
       +'<div class="td"><div class="prog-inline"><div class="progbar"><div class="progbar-fill" style="width:'+pct+'%"></div></div><div class="prog-pct">'+pct+'%</div></div></div>'
-      +'<div class="td muted">'+(u.modules_done||0)+'/8</div>'
+      +'<div class="td muted">'+(u.modules_done||0)+'/'+totalMods+'</div>'
       +'<div class="td">'+pillStatus(st)+'</div>'
       +'<div class="td"><button class="btn-ver" onclick="event.stopPropagation();abrirDetalhe(\''+u.user_id+'\')">Ver →</button></div>'
       +'</div>';
@@ -346,21 +471,177 @@ function renderizarTudo(){
   document.getElementById('st-mods').textContent=mods;
   document.getElementById('tabela-visao').innerHTML=buildRows(todosUsers.slice(0,5));
   document.getElementById('tabela-clientes').innerHTML=buildRows(todosUsers);
-  var modHtml=MODULOS.map(function(m){
+  var modHtml=todosModulos.map(function(m){
     var progs=todosProg.filter(function(p){return p.module_id===m.id;});
     var started=progs.length,done=progs.filter(function(p){return p.completed;}).length;
     var avgP=started?Math.round(progs.reduce(function(a,p){return a+p.percent;},0)/started):0;
     var taxa=total?Math.round(done/total*100):0;
-    return'<tr><td>'+m.emoji+' '+m.titulo+'</td><td>'+started+' de '+total+'</td><td>'+done+'</td>'
+    return'<tr><td>'+(m.emoji||'📚')+' '+m.titulo+'</td><td>'+started+' de '+total+'</td><td>'+done+'</td>'
       +'<td><div class="prog-inline"><div class="progbar" style="max-width:90px;"><div class="progbar-fill" style="width:'+taxa+'%"></div></div><div class="prog-pct">'+taxa+'%</div></div></td>'
       +'<td><div class="prog-inline"><div class="progbar" style="max-width:90px;"><div class="progbar-fill" style="width:'+avgP+'%"></div></div><div class="prog-pct">'+avgP+'%</div></div></td></tr>';
   }).join('');
-  document.getElementById('tabela-modulos').innerHTML=modHtml;
+  document.getElementById('tabela-modulos').innerHTML=modHtml||'<tr><td colspan="5" style="text-align:center;color:#4A4A5A;padding:1.5rem;">Nenhum módulo cadastrado</td></tr>';
 }
 
+// ── GESTÃO DE MÓDULOS
+function renderizarGestaoModulos(){
+  var cont=document.getElementById('modulos-lista-gestao');
+  if(!todosModulos.length){
+    cont.innerHTML='<div class="loading-msg" style="background:#141417;border:1px solid #252530;border-radius:12px;">Nenhum módulo cadastrado ainda. Clique em "+ Novo módulo" para começar.</div>';
+    return;
+  }
+  var sorted=[...todosModulos].sort(function(a,b){return(a.ordem||0)-(b.ordem||0);});
+  cont.innerHTML=sorted.map(function(m,i){
+    var naulas=todasAulas.filter(function(a){return a.module_id===m.id;}).length;
+    return'<div class="modulo-row" draggable="true" data-id="'+m.id+'" '
+      +'ondragstart="dragStart(event)" ondragover="dragOver(event)" ondrop="dragDrop(event)" ondragend="dragEnd(event)">'
+      +'<div class="drag-handle" title="Arrastar para reordenar">⠿</div>'
+      +'<div class="mod-emoji-preview">'+(m.emoji||'📚')+'</div>'
+      +'<div class="mod-info">'
+      +'<div class="mod-titulo-row">'+m.titulo+'</div>'
+      +'<div class="mod-subtitulo">'+(m.descricao||'Sem descrição')+' · '+naulas+' aula(s)</div>'
+      +'</div>'
+      +'<div class="mod-ordem-badge">#'+m.ordem+'</div>'
+      +'<div class="mod-acoes">'
+      +'<button class="btn btn-ghost btn-sm" onclick="abrirModalModulo('+m.id+')">✏️ Editar</button>'
+      +'<button class="btn btn-danger btn-sm" onclick="excluirModulo('+m.id+',\''+m.titulo.replace(/'/g,'')+'\')">✕</button>'
+      +'</div>'
+      +'</div>';
+  }).join('');
+}
+
+// ── DRAG AND DROP reordenar
+function dragStart(e){dragSrc=e.currentTarget;e.currentTarget.classList.add('dragging');e.dataTransfer.effectAllowed='move';}
+function dragOver(e){e.preventDefault();e.dataTransfer.dropEffect='move';document.querySelectorAll('.modulo-row').forEach(function(r){r.classList.remove('drag-over');});e.currentTarget.classList.add('drag-over');}
+function dragEnd(e){document.querySelectorAll('.modulo-row').forEach(function(r){r.classList.remove('dragging','drag-over');});}
+async function dragDrop(e){
+  e.preventDefault();
+  if(!dragSrc||dragSrc===e.currentTarget) return;
+  var idA=parseInt(dragSrc.dataset.id),idB=parseInt(e.currentTarget.dataset.id);
+  var a=todosModulos.find(function(m){return m.id===idA;}),b=todosModulos.find(function(m){return m.id===idB;});
+  if(!a||!b) return;
+  var tmp=a.ordem;a.ordem=b.ordem;b.ordem=tmp;
+  renderizarGestaoModulos();
+  if(!modoDemo&&sb){
+    try{
+      await Promise.all([
+        sb.from('modulos').update({ordem:a.ordem}).eq('id',idA),
+        sb.from('modulos').update({ordem:b.ordem}).eq('id',idB),
+      ]);
+      mostrarToast('Ordem atualizada!');
+    }catch(err){mostrarToast('Erro ao salvar ordem',true);}
+  } else if(modoDemo){
+    mostrarToast('Ordem reordenada (demo — não salva)');
+  }
+}
+
+// ── MODAL MÓDULO
+function renderEmojiGrid(){
+  var g=document.getElementById('emoji-grid');
+  g.innerHTML=EMOJIS.map(function(e){
+    return'<div class="emoji-opt'+(e===emojiSelecionado?' sel':'')+'" onclick="selecionarEmoji(\''+e+'\')" title="'+e+'">'+e+'</div>';
+  }).join('');
+}
+function selecionarEmoji(e){
+  emojiSelecionado=e;
+  document.getElementById('emoji-preview-box').textContent=e;
+  document.querySelectorAll('.emoji-opt').forEach(function(el){el.classList.remove('sel');if(el.textContent===e)el.classList.add('sel');});
+}
+
+function abrirModalModulo(id){
+  editandoModuloId=id||null;
+  var tit=document.getElementById('modal-modulo-titulo');
+  var m=id?todosModulos.find(function(x){return x.id===id;}):null;
+  tit.textContent=m?'✏️ Editar módulo':'+ Novo módulo';
+  document.getElementById('mod-titulo').value=m?m.titulo:'';
+  document.getElementById('mod-desc').value=m?(m.descricao||''):'';
+  document.getElementById('mod-ordem').value=m?m.ordem:(todosModulos.length+1);
+  emojiSelecionado=m?(m.emoji||'📡'):'📡';
+  document.getElementById('emoji-preview-box').textContent=emojiSelecionado;
+  renderEmojiGrid();
+  document.getElementById('mod-erro').style.display='none';
+  document.getElementById('mod-ok').style.display='none';
+  document.getElementById('modal-modulo').classList.add('aberto');
+}
+function fecharModalModulo(){document.getElementById('modal-modulo').classList.remove('aberto');editandoModuloId=null;}
+
+async function salvarModulo(){
+  var titulo=document.getElementById('mod-titulo').value.trim();
+  var desc=document.getElementById('mod-desc').value.trim();
+  var ordem=parseInt(document.getElementById('mod-ordem').value)||1;
+  var erroEl=document.getElementById('mod-erro'),okEl=document.getElementById('mod-ok');
+  erroEl.style.display='none';okEl.style.display='none';
+
+  if(!titulo){erroEl.textContent='O título é obrigatório.';erroEl.style.display='block';return;}
+
+  var btn=document.getElementById('btn-salvar-modulo');btn.disabled=true;btn.textContent='Salvando...';
+
+  if(modoDemo){
+    if(editandoModuloId){
+      var m=todosModulos.find(function(x){return x.id===editandoModuloId;});
+      if(m){m.titulo=titulo;m.descricao=desc;m.emoji=emojiSelecionado;m.ordem=ordem;}
+    } else {
+      var newId=Math.max.apply(null,todosModulos.map(function(x){return x.id;}))+1;
+      todosModulos.push({id:newId,titulo,descricao:desc,emoji:emojiSelecionado,ordem});
+    }
+    renderizarGestaoModulos();renderizarConteudo();renderizarTudo();
+    fecharModalModulo();
+    mostrarToast(editandoModuloId?'Módulo atualizado (demo)!':'Módulo criado (demo)!');
+    btn.disabled=false;btn.textContent='Salvar módulo';
+    return;
+  }
+
+  try{
+    var payload={titulo,descricao:desc,emoji:emojiSelecionado,ordem};
+    var r;
+    if(editandoModuloId){
+      r=await sb.from('modulos').update(payload).eq('id',editandoModuloId).select();
+    } else {
+      r=await sb.from('modulos').insert(payload).select();
+    }
+    if(r.error)throw r.error;
+    // recarregar módulos
+    var mr=await sb.from('modulos').select('*').order('ordem');
+    todosModulos=mr.data||[];
+    renderizarGestaoModulos();renderizarConteudo();renderizarTudo();
+    fecharModalModulo();
+    mostrarToast(editandoModuloId?'Módulo atualizado!':'Módulo criado!');
+  }catch(e){erroEl.textContent='Erro: '+e.message;erroEl.style.display='block';}
+  btn.disabled=false;btn.textContent='Salvar módulo';
+}
+
+async function excluirModulo(id,titulo){
+  if(!confirm('Excluir o módulo "'+titulo+'"?\n\nIsso também removerá todo o conteúdo associado a ele.')) return;
+  if(modoDemo){
+    todosModulos=todosModulos.filter(function(m){return m.id!==id;});
+    todasAulas=todasAulas.filter(function(a){return a.module_id!==id;});
+    renderizarGestaoModulos();renderizarConteudo();renderizarTudo();
+    mostrarToast('Módulo excluído (demo)');
+    return;
+  }
+  try{
+    await sb.from('aulas').delete().eq('module_id',id);
+    var r=await sb.from('modulos').delete().eq('id',id);
+    if(r.error)throw r.error;
+    var mr=await sb.from('modulos').select('*').order('ordem');
+    todosModulos=mr.data||[];
+    await carregarAulas();
+    renderizarGestaoModulos();renderizarConteudo();renderizarTudo();
+    mostrarToast('Módulo excluído com sucesso!');
+  }catch(e){mostrarToast('Erro ao excluir: '+e.message,true);}
+}
+
+// ── CONTEÚDO
 function renderizarConteudo(){
+  var selectMod=document.getElementById('add-modulo');
+  if(selectMod){
+    selectMod.innerHTML=todosModulos.sort(function(a,b){return(a.ordem||0)-(b.ordem||0);}).map(function(m){
+      return'<option value="'+m.id+'">'+( m.emoji||'📚')+' '+m.titulo+'</option>';
+    }).join('');
+  }
   var html='';
-  MODULOS.forEach(function(m){
+  var sorted=[...todosModulos].sort(function(a,b){return(a.ordem||0)-(b.ordem||0);});
+  sorted.forEach(function(m){
     var aulas=todasAulas.filter(function(a){return a.module_id===m.id;});
     var videos=aulas.filter(function(a){return a.tipo==='video';});
     var pdfs=aulas.filter(function(a){return a.tipo==='pdf';});
@@ -373,13 +654,13 @@ function renderizarConteudo(){
     }).join(''):'<div class="aula-sem">Nenhum conteúdo ainda</div>';
     html+='<div class="modulo-card">'
       +'<div class="modulo-card-header">'
-      +'<div><div class="modulo-nome">'+m.emoji+' '+m.titulo+'</div><div class="modulo-count">'+videos.length+' vídeo(s) · '+pdfs.length+' apostila(s)</div></div>'
+      +'<div><div class="modulo-nome">'+(m.emoji||'📚')+' '+m.titulo+'</div><div class="modulo-count">'+videos.length+' vídeo(s) · '+pdfs.length+' apostila(s)</div></div>'
       +'<button class="btn-add" onclick="abrirModalAdicionar('+m.id+')">+ Adicionar</button>'
       +'</div>'
       +'<div class="aulas-lista">'+aulasHtml+'</div>'
       +'</div>';
   });
-  document.getElementById('modulos-conteudo').innerHTML=html;
+  document.getElementById('modulos-conteudo').innerHTML=html||'<div class="loading-msg">Nenhum módulo cadastrado ainda. Crie módulos primeiro na aba "📚 Módulos".</div>';
 }
 
 function filtrarClientes(){
@@ -389,14 +670,17 @@ function filtrarClientes(){
 }
 
 function trocarAba(nome,el){
-  ['visao','clientes','conteudo','modulos'].forEach(function(a){document.getElementById('aba-'+a).style.display=a===nome?'block':'none';});
+  ['visao','clientes','modulos-gestao','conteudo','modulos-stats'].forEach(function(a){
+    var el2=document.getElementById('aba-'+a);
+    if(el2) el2.style.display=a===nome?'block':'none';
+  });
   document.querySelectorAll('.nav-aba').forEach(function(a){a.classList.remove('ativa');});
   if(el)el.classList.add('ativa');
 }
 
 // ── ADICIONAR CONTEÚDO
 function abrirModalAdicionar(moduleId){
-  if(moduleId) document.getElementById('add-modulo').value=moduleId;
+  if(moduleId){var s=document.getElementById('add-modulo');if(s)s.value=moduleId;}
   document.getElementById('add-titulo').value='';
   document.getElementById('add-url').value='';
   document.getElementById('add-ordem').value='1';
@@ -412,17 +696,14 @@ async function salvarAula(){
   var titulo=document.getElementById('add-titulo').value.trim();
   var url=document.getElementById('add-url').value.trim();
   var ordem=parseInt(document.getElementById('add-ordem').value)||1;
-  var erroEl=document.getElementById('add-erro');
-  erroEl.style.display='none';
+  var erroEl=document.getElementById('add-erro');erroEl.style.display='none';
   if(!titulo||!url){erroEl.textContent='Preencha título e link.';erroEl.style.display='block';return;}
-  var btn=document.getElementById('btn-salvar-aula');
-  btn.disabled=true;btn.textContent='Salvando...';
+  var btn=document.getElementById('btn-salvar-aula');btn.disabled=true;btn.textContent='Salvando...';
   try{
     var r=await sb.from('aulas').insert({module_id:mid,tipo,titulo,url,ordem,ativo:true});
-    if(r.error) throw r.error;
-    fecharModal();
-    await carregarAulas();
-    renderizarConteudo();
+    if(r.error)throw r.error;
+    fecharModal();await carregarAulas();renderizarConteudo();
+    mostrarToast('Conteúdo adicionado!');
   }catch(e){erroEl.textContent='Erro: '+e.message;erroEl.style.display='block';}
   btn.disabled=false;btn.textContent='Salvar';
 }
@@ -430,20 +711,21 @@ async function salvarAula(){
 async function excluirAula(id){
   if(modoDemo){alert('Em modo demonstração não é possível excluir.');return;}
   if(!confirm('Remover este conteúdo?')) return;
-  try{await sb.from('aulas').delete().eq('id',id);await carregarAulas();renderizarConteudo();}catch(e){alert('Erro: '+e.message);}
+  try{await sb.from('aulas').delete().eq('id',id);await carregarAulas();renderizarConteudo();mostrarToast('Conteúdo removido.');}
+  catch(e){mostrarToast('Erro: '+e.message,true);}
 }
 
 // ── DETALHE CLIENTE
 function abrirDetalhe(uid){
-  var u=todosUsers.find(function(x){return x.user_id===uid;});
-  if(!u)return;
+  var u=todosUsers.find(function(x){return x.user_id===uid;});if(!u)return;
   var progs=todosProg.filter(function(p){return p.user_id===uid;});
   var nome=u.full_name||u.email.split('@')[0];
   var ini=nome.split(' ').map(function(w){return w[0];}).join('').toUpperCase().slice(0,2);
-  var modRows=MODULOS.map(function(m){
+  var sorted=[...todosModulos].sort(function(a,b){return(a.ordem||0)-(b.ordem||0);});
+  var modRows=sorted.map(function(m){
     var p=progs.find(function(x){return x.module_id===m.id;});
     var mp=p?p.percent:0,done=p&&p.completed;
-    return'<div class="mod-det-row"><div style="font-size:16px;width:24px;text-align:center;flex-shrink:0;">'+m.emoji+'</div>'
+    return'<div class="mod-det-row"><div style="font-size:16px;width:24px;text-align:center;flex-shrink:0;">'+(m.emoji||'📚')+'</div>'
       +'<div style="flex:1;"><div style="font-size:12px;font-weight:500;">'+m.titulo+'</div>'
       +'<div class="mod-det-bar"><div class="mod-det-fill" style="width:'+mp+'%"></div></div></div>'
       +'<div style="font-size:11px;color:#4A4A5A;min-width:30px;text-align:right;">'+mp+'%</div>'
@@ -458,7 +740,7 @@ function abrirDetalhe(uid){
 function fecharDetalhe(){document.getElementById('painel-detalhe').style.display='none';}
 
 document.addEventListener('keydown',function(e){
-  if(e.key==='Escape'){fecharDetalhe();fecharModal();}
+  if(e.key==='Escape'){fecharDetalhe();fecharModal();fecharModalModulo();}
   if(e.key==='Enter'&&document.getElementById('tela-login').style.display!=='none') fazerLogin();
 });
 </script>
