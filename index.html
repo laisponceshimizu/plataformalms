@@ -95,6 +95,48 @@ select option{background:#1A1A1F;}
 .mod-prog-bar{height:6px;background:#252530;border-radius:4px;overflow:hidden;}
 .mod-prog-fill{height:100%;background:#00BFFF;border-radius:4px;transition:width .5s;}
 
+/* NAV TABS CLIENTE */
+.nav-cliente{display:flex;gap:4px;margin-bottom:1.5rem;background:#141417;border:1px solid #252530;border-radius:10px;padding:4px;}
+.nav-tab{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:13px;cursor:pointer;color:#8A8A9A;transition:all .15s;}
+.nav-tab.ativa{background:#1A2840;color:#00BFFF;font-weight:600;}
+
+/* FAQ */
+.faq-item{background:#141417;border:1px solid #252530;border-radius:12px;margin-bottom:8px;overflow:hidden;transition:border-color .15s;}
+.faq-item.aberto{border-color:#35353f;}
+.faq-pergunta{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;cursor:pointer;gap:12px;}
+.faq-pergunta:hover{background:#1A1A1F;}
+.faq-texto{font-size:14px;font-weight:500;flex:1;}
+.faq-icone{color:#00BFFF;font-size:18px;flex-shrink:0;transition:transform .2s;line-height:1;}
+.faq-item.aberto .faq-icone{transform:rotate(45deg);}
+.faq-resposta{display:none;padding:0 1.25rem 1rem;font-size:13px;color:#8A8A9A;line-height:1.6;border-top:1px solid #1A1A1F;}
+.faq-item.aberto .faq-resposta{display:block;}
+.faq-categoria{font-size:11px;font-weight:600;color:#4A4A5A;text-transform:uppercase;letter-spacing:.5px;margin:1.25rem 0 .625rem;}
+.faq-busca-wrap{position:relative;margin-bottom:1.25rem;}
+.faq-busca-wrap input{padding-left:36px;}
+.faq-busca-icone{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#4A4A5A;font-size:14px;}
+
+/* SUPORTE */
+.suporte-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;}
+.suporte-card{background:#141417;border:1px solid #252530;border-radius:12px;padding:1.25rem;}
+.suporte-card-titulo{font-size:13px;font-weight:600;margin-bottom:.375rem;}
+.suporte-card-sub{font-size:12px;color:#4A4A5A;margin-bottom:1rem;}
+.ticket-form{background:#141417;border:1px solid #252530;border-radius:12px;padding:1.5rem;margin-bottom:1rem;}
+.ticket-form-titulo{font-size:15px;font-weight:600;margin-bottom:1.25rem;}
+.campo-label{font-size:12px;color:#8A8A9A;margin-bottom:5px;margin-top:12px;display:block;}
+.ticket-status{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:2px 10px;border-radius:20px;font-weight:600;}
+.ts-aberto{background:rgba(245,158,11,.1);color:#F59E0B;border:1px solid rgba(245,158,11,.2);}
+.ts-respondido{background:rgba(34,197,94,.1);color:#22C55E;border:1px solid rgba(34,197,94,.2);}
+.ts-fechado{background:#1A1A1F;color:#4A4A5A;border:1px solid #252530;}
+.ticket-row{background:#1A1A1F;border:1px solid #252530;border-radius:10px;padding:.875rem 1rem;margin-bottom:8px;cursor:pointer;transition:border-color .15s;}
+.ticket-row:hover{border-color:#35353f;}
+.ticket-row-header{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+.ticket-row-assunto{font-size:13px;font-weight:500;flex:1;}
+.ticket-row-data{font-size:11px;color:#4A4A5A;}
+.ticket-row-preview{font-size:12px;color:#4A4A5A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.resp-balao{background:#1A2840;border:1px solid rgba(0,191,255,.15);border-radius:10px;padding:.875rem;margin-top:8px;}
+.resp-balao-header{font-size:11px;color:#00BFFF;font-weight:600;margin-bottom:5px;}
+.resp-balao-texto{font-size:13px;color:#C5DCEF;line-height:1.5;}
+
 /* TOAST */
 .toast{position:fixed;bottom:1.5rem;right:1.5rem;background:#22C55E;color:#000;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;z-index:9999;transform:translateY(100px);opacity:0;transition:all .3s;display:flex;align-items:center;gap:8px;}
 .toast.show{transform:translateY(0);opacity:1;}
@@ -140,8 +182,61 @@ select option{background:#1A1A1F;}
       <div class="stat"><div class="stat-n" id="s-progresso">0%</div><div class="stat-l">Progresso geral</div></div>
       <div class="stat"><div class="stat-n" id="s-certs">0</div><div class="stat-l">Certificados</div></div>
     </div>
-    <div class="titulo-sec">Trilha de treinamento</div>
-    <div class="modulos" id="lista-modulos"></div>
+    <div class="nav-cliente">
+      <div class="nav-tab ativa" id="tab-trilha" onclick="trocarTab('trilha',this)">🎓 Trilha</div>
+      <div class="nav-tab" id="tab-faq" onclick="trocarTab('faq',this)">❓ FAQ</div>
+      <div class="nav-tab" id="tab-suporte" onclick="trocarTab('suporte',this)">💬 Suporte</div>
+    </div>
+
+    <!-- TRILHA -->
+    <div id="secao-trilha">
+      <div class="titulo-sec">Trilha de treinamento</div>
+      <div class="modulos" id="lista-modulos"></div>
+    </div>
+
+    <!-- FAQ -->
+    <div id="secao-faq" style="display:none;">
+      <div class="faq-busca-wrap">
+        <span class="faq-busca-icone">🔍</span>
+        <input type="text" id="faq-busca" placeholder="Buscar pergunta..." oninput="filtrarFaq()">
+      </div>
+      <div id="faq-lista"></div>
+    </div>
+
+    <!-- SUPORTE -->
+    <div id="secao-suporte" style="display:none;">
+      <div class="suporte-grid">
+        <div class="suporte-card">
+          <div style="font-size:24px;margin-bottom:.5rem;">📧</div>
+          <div class="suporte-card-titulo">E-mail</div>
+          <div class="suporte-card-sub">Resposta em até 24h úteis</div>
+          <a href="mailto:suporte@arbusfrotas.com.br" style="font-size:13px;color:#00BFFF;text-decoration:none;">suporte@arbusfrotas.com.br</a>
+        </div>
+        <div class="suporte-card">
+          <div style="font-size:24px;margin-bottom:.5rem;">💬</div>
+          <div class="suporte-card-titulo">WhatsApp</div>
+          <div class="suporte-card-sub">Seg–Sex, 8h–18h</div>
+          <a href="https://wa.me/5500000000000" target="_blank" style="font-size:13px;color:#22C55E;text-decoration:none;">Abrir conversa →</a>
+        </div>
+      </div>
+
+      <div class="ticket-form">
+        <div class="ticket-form-titulo">✉️ Enviar dúvida</div>
+        <span class="campo-label">Assunto</span>
+        <input type="text" id="ticket-assunto" placeholder="Ex: Não consigo gerar relatório">
+        <span class="campo-label">Módulo relacionado (opcional)</span>
+        <select id="ticket-modulo">
+          <option value="">— Selecione —</option>
+        </select>
+        <span class="campo-label">Mensagem</span>
+        <textarea id="ticket-msg" rows="4" placeholder="Descreva sua dúvida com detalhes..."></textarea>
+        <div class="msg erro" id="ticket-erro" style="margin-top:10px;display:none;"></div>
+        <button class="btn btn-primary" style="margin-top:1rem;width:100%;" onclick="enviarTicket()">Enviar dúvida</button>
+      </div>
+
+      <div class="titulo-sec">Meus chamados</div>
+      <div id="lista-tickets"><div style="text-align:center;padding:1.5rem;color:#4A4A5A;font-size:13px;">Carregando...</div></div>
+    </div>
   </div>
 </div>
 
@@ -559,6 +654,154 @@ document.addEventListener('keydown',function(e){
   if(e.key==='Escape') fecharOverlay();
   if(e.key==='Enter'&&document.getElementById('tela-login').style.display!=='none') autenticar();
 });
+
+// ── NAV TABS
+function trocarTab(nome,el){
+  ['trilha','faq','suporte'].forEach(function(s){
+    var sec=document.getElementById('secao-'+s);
+    if(sec) sec.style.display=s===nome?'block':'none';
+  });
+  document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('ativa');});
+  if(el) el.classList.add('ativa');
+  if(nome==='faq') renderizarFaq();
+  if(nome==='suporte'){preencherSelectModulos();carregarTickets();}
+}
+
+// ── FAQ DATA
+var FAQ_DATA = [
+  {cat:'Acesso e conta', perguntas:[
+    {p:'Como faço para criar minha conta?', r:'Acesse a tela de login e clique em "Criar conta". Preencha seu nome, e-mail e uma senha com pelo menos 6 caracteres.'},
+    {p:'Esqueci minha senha. O que faço?', r:'Na tela de login clique em "Entrar", depois em "Esqueci minha senha". Você receberá um e-mail com link para redefinir.'},
+    {p:'Posso acessar de celular?', r:'Sim! A plataforma é responsiva e funciona em qualquer dispositivo — celular, tablet ou computador.'},
+  ]},
+  {cat:'Módulos e progresso', perguntas:[
+    {p:'Os módulos precisam ser feitos em ordem?', r:'Sim, cada módulo é liberado após a conclusão do anterior. Isso garante que você aprenda no ritmo certo.'},
+    {p:'Como o progresso é calculado?', r:'O progresso é calculado automaticamente. Quando você assiste um vídeo até o final, ele é marcado como concluído. O percentual do módulo reflete quantos vídeos você já concluiu.'},
+    {p:'Posso rever um módulo já concluído?', r:'Sim! Clique em "Revisitar" no módulo concluído para assistir novamente quando quiser.'},
+    {p:'O progresso é salvo se eu sair no meio?', r:'Sim. O progresso de cada aula só é salvo quando o vídeo termina completamente. Se você sair antes do fim, o vídeo não será marcado como concluído.'},
+  ]},
+  {cat:'Conteúdo', perguntas:[
+    {p:'Os vídeos ficam disponíveis para sempre?', r:'Sim. Enquanto sua conta estiver ativa, você tem acesso a todo o conteúdo da plataforma.'},
+    {p:'Posso baixar as apostilas?', r:'Sim. As apostilas em PDF podem ser baixadas clicando no botão "⬇ Baixar" na seção de materiais do módulo.'},
+    {p:'Novos conteúdos são adicionados?', r:'Sim. Nosso time adiciona novos vídeos e materiais regularmente. Fique de olho nas notificações!'},
+  ]},
+  {cat:'Problemas técnicos', perguntas:[
+    {p:'O vídeo não está carregando. O que faço?', r:'Verifique sua conexão com a internet. Se o problema persistir, tente recarregar a página (F5) ou limpar o cache do navegador. Se ainda assim não funcionar, abra um chamado de suporte.'},
+    {p:'Meu progresso não atualizou. O que aconteceu?', r:'O progresso é salvo automaticamente quando o vídeo termina. Certifique-se de assistir o vídeo até o final. Se o problema persistir, entre em contato com o suporte.'},
+    {p:'A plataforma está lenta. Como resolver?', r:'Tente usar outro navegador (recomendamos Chrome ou Edge atualizados). Também verifique se há outros programas pesados abertos no computador.'},
+  ]},
+];
+
+var faqFiltrado = FAQ_DATA;
+
+function renderizarFaq(filtro){
+  var lista=document.getElementById('faq-lista');
+  if(!lista) return;
+  var html='';
+  var dados=filtro?filtro:FAQ_DATA;
+  if(!dados.length||!dados.some(function(c){return c.perguntas.length;})){
+    lista.innerHTML='<div style="text-align:center;padding:2rem;color:#4A4A5A;font-size:13px;">Nenhuma pergunta encontrada.</div>';
+    return;
+  }
+  dados.forEach(function(cat){
+    if(!cat.perguntas.length) return;
+    html+='<div class="faq-categoria">'+cat.cat+'</div>';
+    cat.perguntas.forEach(function(item,i){
+      var id='faq_'+cat.cat.replace(/\s/g,'_')+'_'+i;
+      html+='<div class="faq-item" id="'+id+'">'
+        +'<div class="faq-pergunta" onclick="toggleFaq(''+id+'')">'
+        +'<div class="faq-texto">'+item.p+'</div>'
+        +'<div class="faq-icone">+</div>'
+        +'</div>'
+        +'<div class="faq-resposta">'+item.r+'</div>'
+        +'</div>';
+    });
+  });
+  lista.innerHTML=html;
+}
+
+function toggleFaq(id){
+  var el=document.getElementById(id);
+  if(!el) return;
+  var aberto=el.classList.contains('aberto');
+  document.querySelectorAll('.faq-item.aberto').forEach(function(e){e.classList.remove('aberto');});
+  if(!aberto) el.classList.add('aberto');
+}
+
+function filtrarFaq(){
+  var q=document.getElementById('faq-busca').value.toLowerCase().trim();
+  if(!q){renderizarFaq();return;}
+  var resultado=FAQ_DATA.map(function(cat){
+    return{
+      cat:cat.cat,
+      perguntas:cat.perguntas.filter(function(item){
+        return item.p.toLowerCase().includes(q)||item.r.toLowerCase().includes(q);
+      })
+    };
+  }).filter(function(cat){return cat.perguntas.length;});
+  renderizarFaq(resultado);
+}
+
+// ── SUPORTE / TICKETS
+function preencherSelectModulos(){
+  var sel=document.getElementById('ticket-modulo');
+  if(!sel||sel.options.length>1) return;
+  todosModulos.forEach(function(m){
+    var opt=document.createElement('option');
+    opt.value=m.id;
+    opt.textContent=(m.emoji||'📚')+' '+m.titulo;
+    sel.appendChild(opt);
+  });
+}
+
+async function enviarTicket(){
+  var assunto=document.getElementById('ticket-assunto').value.trim();
+  var msg=document.getElementById('ticket-msg').value.trim();
+  var modId=document.getElementById('ticket-modulo').value||null;
+  var erroEl=document.getElementById('ticket-erro');
+  erroEl.style.display='none';
+  if(!assunto||!msg){erroEl.textContent='Preencha o assunto e a mensagem.';erroEl.style.display='block';return;}
+  try{
+    var r=await sb.from('tickets').insert({
+      user_id:usuarioAtual.id,
+      email:usuarioAtual.email,
+      assunto,
+      mensagem:msg,
+      module_id:modId?parseInt(modId):null,
+      status:'aberto'
+    });
+    if(r.error)throw r.error;
+    document.getElementById('ticket-assunto').value='';
+    document.getElementById('ticket-msg').value='';
+    document.getElementById('ticket-modulo').value='';
+    mostrarToast('✅ Dúvida enviada! Em breve retornaremos.');
+    await carregarTickets();
+  }catch(e){erroEl.textContent='Erro ao enviar: '+e.message;erroEl.style.display='block';}
+}
+
+async function carregarTickets(){
+  var cont=document.getElementById('lista-tickets');
+  if(!cont) return;
+  try{
+    var r=await sb.from('tickets').select('*').eq('user_id',usuarioAtual.id).order('criado_em',{ascending:false});
+    var tickets=r.data||[];
+    if(!tickets.length){cont.innerHTML='<div style="text-align:center;padding:1.5rem;color:#4A4A5A;font-size:13px;">Você ainda não enviou nenhuma dúvida.</div>';return;}
+    cont.innerHTML=tickets.map(function(t){
+      var statusHtml='<span class="ticket-status ts-'+t.status+'">'+{aberto:'⏳ Aberto',respondido:'✅ Respondido',fechado:'○ Fechado'}[t.status]+'</span>';
+      var dataStr=new Date(t.criado_em).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit'});
+      var respHtml=t.resposta?'<div class="resp-balao"><div class="resp-balao-header">💬 Resposta da Arbus</div><div class="resp-balao-texto">'+t.resposta+'</div></div>':'';
+      return'<div class="ticket-row">'
+        +'<div class="ticket-row-header">'
+        +'<div class="ticket-row-assunto">'+t.assunto+'</div>'
+        +statusHtml
+        +'<div class="ticket-row-data">'+dataStr+'</div>'
+        +'</div>'
+        +'<div class="ticket-row-preview">'+t.mensagem+'</div>'
+        +respHtml
+        +'</div>';
+    }).join('');
+  }catch(e){cont.innerHTML='<div style="text-align:center;padding:1rem;color:#4A4A5A;font-size:13px;">Erro ao carregar chamados.</div>';}
+}
 </script>
 </body>
 </html>
