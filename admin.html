@@ -147,6 +147,24 @@ textarea{resize:vertical;min-height:60px;}
 .mod-det-bar{height:3px;background:#222228;border-radius:3px;overflow:hidden;margin-top:3px;}
 .mod-det-fill{height:100%;background:#00BFFF;border-radius:3px;}
 
+/* TICKETS ADMIN */
+.ticket-adm-row{background:#141417;border:1px solid #252530;border-radius:12px;padding:1rem 1.25rem;margin-bottom:10px;}
+.ticket-adm-header{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.ticket-adm-assunto{font-size:14px;font-weight:600;flex:1;}
+.ticket-adm-meta{font-size:11px;color:#4A4A5A;}
+.ticket-adm-msg{font-size:13px;color:#8A8A9A;margin-bottom:10px;line-height:1.5;}
+.ticket-adm-form{display:none;margin-top:10px;border-top:1px solid #252530;padding-top:10px;}
+.ticket-adm-form.aberta{display:block;}
+.pill-aberto{background:rgba(245,158,11,.1);color:#F59E0B;border:1px solid rgba(245,158,11,.2);}
+.pill-respondido{background:rgba(34,197,94,.1);color:#22C55E;border:1px solid rgba(34,197,94,.2);}
+.pill-fechado{background:#1A1A1F;color:#4A4A5A;border:1px solid #252530;}
+.resp-admin-balao{background:rgba(0,191,255,.05);border:1px solid rgba(0,191,255,.15);border-radius:8px;padding:.75rem;margin-bottom:8px;}
+.resp-admin-label{font-size:11px;color:#00BFFF;font-weight:600;margin-bottom:4px;}
+.resp-admin-texto{font-size:13px;color:#C5DCEF;}
+.tickets-filtros{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;}
+.filtro-btn{padding:5px 14px;border-radius:20px;border:1px solid #252530;background:none;color:#8A8A9A;font-size:12px;cursor:pointer;}
+.filtro-btn.ativo{background:#1A2840;color:#00BFFF;border-color:rgba(0,191,255,.3);}
+
 /* toast */
 .toast{position:fixed;bottom:1.5rem;right:1.5rem;background:#22C55E;color:#000;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;z-index:9999;transform:translateY(100px);opacity:0;transition:all .3s;}
 .toast.show{transform:translateY(0);opacity:1;}
@@ -189,6 +207,7 @@ textarea{resize:vertical;min-height:60px;}
       <div class="nav-aba" onclick="trocarAba('modulos-gestao',this)">📚 Módulos</div>
       <div class="nav-aba" onclick="trocarAba('conteudo',this)">📹 Conteúdo</div>
       <div class="nav-aba" onclick="trocarAba('modulos-stats',this)">Desempenho</div>
+      <div class="nav-aba" onclick="trocarAba('suporte',this)">💬 Suporte</div>
     </div>
 
     <!-- VISÃO GERAL -->
@@ -250,6 +269,26 @@ textarea{resize:vertical;min-height:60px;}
           <tbody id="tabela-modulos"></tbody>
         </table>
       </div>
+    </div>
+  </div>
+</div>
+
+    <!-- SUPORTE / TICKETS -->
+    <div id="aba-suporte" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
+        <div>
+          <div class="sec-titulo" style="margin:0;">Chamados de suporte</div>
+          <div style="font-size:12px;color:#4A4A5A;margin-top:3px;">Dúvidas enviadas pelos clientes</div>
+        </div>
+        <button class="btn btn-ghost" onclick="carregarTicketsAdmin()" style="padding:7px 14px;font-size:12px;">↻ Atualizar</button>
+      </div>
+      <div class="tickets-filtros">
+        <button class="filtro-btn ativo" id="f-todos" onclick="filtrarTickets('todos',this)">Todos</button>
+        <button class="filtro-btn" id="f-aberto" onclick="filtrarTickets('aberto',this)">⏳ Abertos</button>
+        <button class="filtro-btn" id="f-respondido" onclick="filtrarTickets('respondido',this)">✅ Respondidos</button>
+        <button class="filtro-btn" id="f-fechado" onclick="filtrarTickets('fechado',this)">○ Fechados</button>
+      </div>
+      <div id="admin-tickets-lista"><div class="loading-msg">Carregando...</div></div>
     </div>
   </div>
 </div>
@@ -670,12 +709,13 @@ function filtrarClientes(){
 }
 
 function trocarAba(nome,el){
-  ['visao','clientes','modulos-gestao','conteudo','modulos-stats'].forEach(function(a){
+  ['visao','clientes','modulos-gestao','conteudo','modulos-stats','suporte'].forEach(function(a){
     var el2=document.getElementById('aba-'+a);
     if(el2) el2.style.display=a===nome?'block':'none';
   });
   document.querySelectorAll('.nav-aba').forEach(function(a){a.classList.remove('ativa');});
   if(el)el.classList.add('ativa');
+  if(nome==='suporte') carregarTicketsAdmin();
 }
 
 // ── ADICIONAR CONTEÚDO
@@ -743,6 +783,95 @@ document.addEventListener('keydown',function(e){
   if(e.key==='Escape'){fecharDetalhe();fecharModal();fecharModalModulo();}
   if(e.key==='Enter'&&document.getElementById('tela-login').style.display!=='none') fazerLogin();
 });
+
+// ── TICKETS ADMIN
+var todosTickets=[];
+var filtroAtual='todos';
+
+async function carregarTicketsAdmin(){
+  var cont=document.getElementById('admin-tickets-lista');
+  if(!cont) return;
+  if(modoDemo){
+    todosTickets=[
+      {id:'1',email:'joao@transportadora.com.br',assunto:'Não consigo acessar relatórios',mensagem:'Quando clico em relatórios aparece uma tela em branco. Já tentei recarregar mas não resolve.',status:'aberto',criado_em:'2026-04-20T10:00:00Z',resposta:null,module_id:4},
+      {id:'2',email:'maria@logistica.com.br',assunto:'Como exportar dados para Excel?',mensagem:'Gostaria de saber se é possível exportar os dados de telemetria para planilha Excel.',status:'respondido',criado_em:'2026-04-18T14:00:00Z',resposta:'Olá Maria! Sim, é possível exportar. No módulo de Relatórios, clique no botão "Exportar" no canto superior direito e escolha o formato Excel.',module_id:4},
+      {id:'3',email:'pedro@frota.com.br',assunto:'Dúvida sobre configuração de alertas',mensagem:'Quero configurar alertas de velocidade acima de 80km/h mas não encontrei onde fazer isso.',status:'aberto',criado_em:'2026-04-22T09:00:00Z',resposta:null,module_id:5},
+    ];
+    renderizarTicketsAdmin();
+    return;
+  }
+  try{
+    var r=await sb.from('tickets').select('*').order('criado_em',{ascending:false});
+    todosTickets=r.data||[];
+    renderizarTicketsAdmin();
+  }catch(e){cont.innerHTML='<div class="loading-msg">Erro ao carregar tickets.</div>';}
+}
+
+function filtrarTickets(status,el){
+  filtroAtual=status;
+  document.querySelectorAll('.filtro-btn').forEach(function(b){b.classList.remove('ativo');});
+  if(el) el.classList.add('ativo');
+  renderizarTicketsAdmin();
+}
+
+function renderizarTicketsAdmin(){
+  var cont=document.getElementById('admin-tickets-lista');
+  if(!cont) return;
+  var lista=filtroAtual==='todos'?todosTickets:todosTickets.filter(function(t){return t.status===filtroAtual;});
+  if(!lista.length){cont.innerHTML='<div class="loading-msg">Nenhum chamado encontrado.</div>';return;}
+  var statusLabels={aberto:'⏳ Aberto',respondido:'✅ Respondido',fechado:'○ Fechado'};
+  var statusClasses={aberto:'pill-aberto',respondido:'pill-respondido',fechado:'pill-fechado'};
+  cont.innerHTML=lista.map(function(t){
+    var data=new Date(t.criado_em).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'});
+    var respHtml=t.resposta?'<div class="resp-admin-balao"><div class="resp-admin-label">✏️ Sua resposta</div><div class="resp-admin-texto">'+t.resposta+'</div></div>':'';
+    var formId='form_'+t.id;
+    return '<div class="ticket-adm-row">'
+      +'<div class="ticket-adm-header">'
+      +'<div class="ticket-adm-assunto">'+t.assunto+'</div>'
+      +'<span class="pill '+statusClasses[t.status]+'">'+statusLabels[t.status]+'</span>'
+      +'</div>'
+      +'<div class="ticket-adm-meta">'+t.email+' · '+data+'</div>'
+      +'<div class="ticket-adm-msg">'+t.mensagem+'</div>'
+      +respHtml
+      +'<div class="ticket-adm-form" id="'+formId+'">'
+      +'<textarea id="resp_'+t.id+'" rows="3" placeholder="Digite sua resposta..." style="width:100%;background:#1A1A1F;border:1px solid #35353f;border-radius:8px;color:#fff;padding:10px;font-size:13px;font-family:sans-serif;outline:none;resize:vertical;">'+(t.resposta||'')+'</textarea>'
+      +'<div style="display:flex;gap:8px;margin-top:8px;">'
+      +'<button class="btn btn-primary btn-sm" onclick="responderTicket(''+t.id+'','respondido')">✉️ Salvar resposta</button>'
+      +'<button class="btn btn-ghost btn-sm" onclick="responderTicket(''+t.id+'','fechado')">○ Fechar chamado</button>'
+      +'<button class="btn btn-ghost btn-sm" onclick="toggleResposta(''+formId+'')">Cancelar</button>'
+      +'</div>'
+      +'</div>'
+      +'<div style="display:flex;gap:8px;margin-top:8px;">'
+      +(t.status!=='fechado'?'<button class="btn btn-ghost btn-sm" onclick="toggleResposta(''+formId+'')">'+(t.resposta?'✏️ Editar resposta':'💬 Responder')+'</button>':'')
+      +(t.status==='respondido'?'<button class="btn btn-ghost btn-sm" onclick="responderTicket(''+t.id+'','fechado')">○ Fechar</button>':'')
+      +'</div>'
+      +'</div>';
+  }).join('');
+}
+
+function toggleResposta(formId){
+  var f=document.getElementById(formId);
+  if(f) f.classList.toggle('aberta');
+}
+
+async function responderTicket(id,novoStatus){
+  var resp=document.getElementById('resp_'+id).value.trim();
+  if(!resp&&novoStatus==='respondido'){alert('Digite uma resposta antes de salvar.');return;}
+  if(modoDemo){
+    var t=todosTickets.find(function(x){return x.id===id;});
+    if(t){t.resposta=resp;t.status=novoStatus;}
+    renderizarTicketsAdmin();
+    mostrarToast(novoStatus==='respondido'?'Resposta enviada (demo)!':'Chamado fechado (demo)');
+    return;
+  }
+  try{
+    var payload={status:novoStatus,atualizado_em:new Date().toISOString()};
+    if(resp) payload.resposta=resp;
+    await sb.from('tickets').update(payload).eq('id',id);
+    await carregarTicketsAdmin();
+    mostrarToast(novoStatus==='respondido'?'✅ Resposta enviada!':'○ Chamado fechado');
+  }catch(e){mostrarToast('Erro: '+e.message,true);}
+}
 </script>
 </body>
 </html>
