@@ -424,7 +424,7 @@ async function fazerLogin(){
   var email=document.getElementById('inp-email').value.trim();
   var senha=document.getElementById('inp-senha').value;
   if(!email||!senha){mostrarErroLogin('Preencha todos os campos.');return;}
-  var btn=document.getElementById('btn-entrar');btn.disabled=true;btn.textContent='Verificando...';;
+  var btn=document.getElementById('btn-entrar');btn.disabled=true;btn.textContent='Verificando...';
   try{
     var r=await sb.auth.signInWithPassword({email,password:senha});
     if(r.error)throw r.error;
@@ -878,14 +878,14 @@ function renderizarTicketsAdmin(){
       +'<div class="ticket-adm-form" id="'+formId+'">'
       +'<textarea id="resp_'+t.id+'" rows="3" placeholder="Digite sua resposta..." style="width:100%;background:#1A1A1F;border:1px solid #35353f;border-radius:8px;color:#fff;padding:10px;font-size:13px;font-family:sans-serif;outline:none;resize:vertical;">'+(t.resposta||'')+'</textarea>'
       +'<div style="display:flex;gap:8px;margin-top:8px;">'
-      +'<button class="btn btn-primary btn-sm" onclick="responderTicket(''+t.id+'','respondido')">✉️ Salvar resposta</button>'
-      +'<button class="btn btn-ghost btn-sm" onclick="responderTicket(''+t.id+'','fechado')">○ Fechar chamado</button>'
-      +'<button class="btn btn-ghost btn-sm" onclick="toggleResposta(''+formId+'')">Cancelar</button>'
+      +'<button class="btn btn-primary btn-sm" onclick="responderTicket(&quot;'+t.id+'&quot;,&quot;respondido&quot;)">✉️ Salvar resposta</button>'
+      +'<button class="btn btn-ghost btn-sm" onclick="responderTicket(&quot;'+t.id+'&quot;,&quot;fechado&quot;)">○ Fechar chamado</button>'
+      +'<button class="btn btn-ghost btn-sm" onclick="toggleResposta(&quot;'+formId+'&quot;)">Cancelar</button>'
       +'</div>'
       +'</div>'
       +'<div style="display:flex;gap:8px;margin-top:8px;">'
-      +(t.status!=='fechado'?'<button class="btn btn-ghost btn-sm" onclick="toggleResposta(''+formId+'')">'+(t.resposta?'✏️ Editar resposta':'💬 Responder')+'</button>':'')
-      +(t.status==='respondido'?'<button class="btn btn-ghost btn-sm" onclick="responderTicket(''+t.id+'','fechado')">○ Fechar</button>':'')
+      +(t.status!=='fechado'?'<button class="btn btn-ghost btn-sm" onclick="toggleResposta(&quot;'+formId+'&quot;)">'+(t.resposta?'✏️ Editar resposta':'💬 Responder')+'</button>':'')
+      +(t.status==='respondido'?'<button class="btn btn-ghost btn-sm" onclick="responderTicket(&quot;'+t.id+'&quot;,&quot;fechado&quot;)">○ Fechar</button>':'')
       +'</div>'
       +'</div>';
   }).join('');
