@@ -861,34 +861,53 @@ function renderizarTicketsAdmin(){
   if(!cont) return;
   var lista=filtroAtual==='todos'?todosTickets:todosTickets.filter(function(t){return t.status===filtroAtual;});
   if(!lista.length){cont.innerHTML='<div class="loading-msg">Nenhum chamado encontrado.</div>';return;}
-  var statusLabels={aberto:'⏳ Aberto',respondido:'✅ Respondido',fechado:'○ Fechado'};
+  var statusLabels={aberto:'Aberto',respondido:'Respondido',fechado:'Fechado'};
   var statusClasses={aberto:'pill-aberto',respondido:'pill-respondido',fechado:'pill-fechado'};
-  cont.innerHTML=lista.map(function(t){
-    var data=new Date(t.criado_em).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'});
-    var respHtml=t.resposta?'<div class="resp-admin-balao"><div class="resp-admin-label">✏️ Sua resposta</div><div class="resp-admin-texto">'+t.resposta+'</div></div>':'';
+  cont.innerHTML='';
+  lista.forEach(function(t){
+    var data=new Date(t.criado_em).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit'});
     var formId='form_'+t.id;
-    return '<div class="ticket-adm-row">'
-      +'<div class="ticket-adm-header">'
-      +'<div class="ticket-adm-assunto">'+t.assunto+'</div>'
-      +'<span class="pill '+statusClasses[t.status]+'">'+statusLabels[t.status]+'</span>'
-      +'</div>'
-      +'<div class="ticket-adm-meta">'+t.email+' · '+data+'</div>'
-      +'<div class="ticket-adm-msg">'+t.mensagem+'</div>'
-      +respHtml
-      +'<div class="ticket-adm-form" id="'+formId+'">'
-      +'<textarea id="resp_'+t.id+'" rows="3" placeholder="Digite sua resposta..." style="width:100%;background:#1A1A1F;border:1px solid #35353f;border-radius:8px;color:#fff;padding:10px;font-size:13px;font-family:sans-serif;outline:none;resize:vertical;">'+(t.resposta||'')+'</textarea>'
-      +'<div style="display:flex;gap:8px;margin-top:8px;">'
-      +'<button class="btn btn-primary btn-sm" onclick="responderTicket(&quot;'+t.id+'&quot;,&quot;respondido&quot;)">✉️ Salvar resposta</button>'
-      +'<button class="btn btn-ghost btn-sm" onclick="responderTicket(&quot;'+t.id+'&quot;,&quot;fechado&quot;)">○ Fechar chamado</button>'
-      +'<button class="btn btn-ghost btn-sm" onclick="toggleResposta(&quot;'+formId+'&quot;)">Cancelar</button>'
-      +'</div>'
-      +'</div>'
-      +'<div style="display:flex;gap:8px;margin-top:8px;">'
-      +(t.status!=='fechado'?'<button class="btn btn-ghost btn-sm" onclick="toggleResposta(&quot;'+formId+'&quot;)">'+(t.resposta?'✏️ Editar resposta':'💬 Responder')+'</button>':'')
-      +(t.status==='respondido'?'<button class="btn btn-ghost btn-sm" onclick="responderTicket(&quot;'+t.id+'&quot;,&quot;fechado&quot;)">○ Fechar</button>':'')
-      +'</div>'
-      +'</div>';
-  }).join('');
+    var div=document.createElement('div'); div.className='ticket-adm-row';
+    var h=document.createElement('div'); h.className='ticket-adm-header';
+    var as=document.createElement('div'); as.className='ticket-adm-assunto'; as.textContent=t.assunto;
+    var sp=document.createElement('span'); sp.className='pill '+statusClasses[t.status]; sp.textContent=statusLabels[t.status];
+    h.appendChild(as); h.appendChild(sp); div.appendChild(h);
+    var me=document.createElement('div'); me.className='ticket-adm-meta'; me.textContent=t.email+' · '+data; div.appendChild(me);
+    var mg=document.createElement('div'); mg.className='ticket-adm-msg'; mg.textContent=t.mensagem; div.appendChild(mg);
+    if(t.resposta){
+      var rb=document.createElement('div'); rb.className='resp-admin-balao';
+      var rl=document.createElement('div'); rl.className='resp-admin-label'; rl.textContent='Sua resposta'; rb.appendChild(rl);
+      var rt=document.createElement('div'); rt.className='resp-admin-texto'; rt.textContent=t.resposta; rb.appendChild(rt);
+      div.appendChild(rb);
+    }
+    var form=document.createElement('div'); form.className='ticket-adm-form'; form.id=formId;
+    var ta=document.createElement('textarea'); ta.id='resp_'+t.id; ta.rows=3; ta.placeholder='Digite sua resposta...';
+    ta.style.cssText='width:100%;background:#1A1A1F;border:1px solid #35353f;border-radius:8px;color:#fff;padding:10px;font-size:13px;font-family:sans-serif;outline:none;resize:vertical;';
+    if(t.resposta) ta.value=t.resposta;
+    form.appendChild(ta);
+    var bw=document.createElement('div'); bw.style.cssText='display:flex;gap:8px;margin-top:8px;';
+    var b1=document.createElement('button'); b1.className='btn btn-primary btn-sm'; b1.textContent='Salvar resposta';
+    b1.onclick=(function(id){return function(){responderTicket(id,'respondido');};})(t.id);
+    var b2=document.createElement('button'); b2.className='btn btn-ghost btn-sm'; b2.textContent='Fechar chamado';
+    b2.onclick=(function(id){return function(){responderTicket(id,'fechado');};})(t.id);
+    var b3=document.createElement('button'); b3.className='btn btn-ghost btn-sm'; b3.textContent='Cancelar';
+    b3.onclick=(function(fid){return function(){toggleResposta(fid);};})(formId);
+    bw.appendChild(b1); bw.appendChild(b2); bw.appendChild(b3);
+    form.appendChild(bw); div.appendChild(form);
+    var aw=document.createElement('div'); aw.style.cssText='display:flex;gap:8px;margin-top:8px;';
+    if(t.status!=='fechado'){
+      var ba=document.createElement('button'); ba.className='btn btn-ghost btn-sm';
+      ba.textContent=t.resposta?'Editar resposta':'Responder';
+      ba.onclick=(function(fid){return function(){toggleResposta(fid);};})(formId);
+      aw.appendChild(ba);
+    }
+    if(t.status==='respondido'){
+      var bf=document.createElement('button'); bf.className='btn btn-ghost btn-sm'; bf.textContent='Fechar';
+      bf.onclick=(function(id){return function(){responderTicket(id,'fechado');};})(t.id);
+      aw.appendChild(bf);
+    }
+    div.appendChild(aw); cont.appendChild(div);
+  });
 }
 
 function toggleResposta(formId){
