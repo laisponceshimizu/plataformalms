@@ -407,7 +407,7 @@ window.onload=function(){
   renderEmojiGrid();
   if(!window.supabase) return;
   sb=window.supabase.createClient(URL_SB,KEY_SB);
-  sb.auth.getSession().then(function(r){if(r.data.session) entrarApp(r.data.session.user);});
+  sb.auth.getSession().then(function(r){if(r.data.session) verificarEEntrar(r.data.session.user);});
 };
 
 // ── AUTH
@@ -424,13 +424,43 @@ async function fazerLogin(){
   var email=document.getElementById('inp-email').value.trim();
   var senha=document.getElementById('inp-senha').value;
   if(!email||!senha){mostrarErroLogin('Preencha todos os campos.');return;}
-  var btn=document.getElementById('btn-entrar');btn.disabled=true;btn.textContent='Aguarde...';
+  var btn=document.getElementById('btn-entrar');btn.disabled=true;btn.textContent='Verificando...';;
   try{
     var r=await sb.auth.signInWithPassword({email,password:senha});
     if(r.error)throw r.error;
-    entrarApp(r.data.user);
-  }catch(e){mostrarErroLogin(e.message==='Invalid login credentials'?'E-mail ou senha incorretos.':e.message);btn.disabled=false;btn.textContent='Entrar com Supabase';}
+    await verificarEEntrar(r.data.user);
+  }catch(e){
+    mostrarErroLogin(e.message==='Invalid login credentials'?'E-mail ou senha incorretos.':e.message);
+    btn.disabled=false;btn.textContent='Entrar com Supabase';
+  }
 }
+
+async function verificarEEntrar(user){
+  // ── Verificar se o usuário tem role = 'admin'
+  var btn=document.getElementById('btn-entrar');
+  try{
+    var r=await sb.from('perfis').select('role').eq('id',user.id).single();
+    if(r.error||!r.data){
+      await sb.auth.signOut();
+      mostrarErroLogin('Perfil não encontrado. Entre em contato com o suporte.');
+      btn.disabled=false;btn.textContent='Entrar com Supabase';
+      return;
+    }
+    if(r.data.role!=='admin'){
+      await sb.auth.signOut();
+      mostrarErroLogin('⛔ Acesso negado. Esta área é restrita a administradores.');
+      btn.disabled=false;btn.textContent='Entrar com Supabase';
+      return;
+    }
+    // É admin — pode entrar
+    entrarApp(user);
+  }catch(e){
+    await sb.auth.signOut();
+    mostrarErroLogin('Erro ao verificar permissão: '+e.message);
+    btn.disabled=false;btn.textContent='Entrar com Supabase';
+  }
+}
+
 async function entrarApp(user){
   document.getElementById('admin-email').textContent=user.email;
   document.getElementById('tela-login').style.display='none';
@@ -612,6 +642,8 @@ async function salvarModulo(){
   erroEl.style.display='none';okEl.style.display='none';
 
   if(!titulo){erroEl.textContent='O título é obrigatório.';erroEl.style.display='block';return;}
+  if(titulo.length>120){erroEl.textContent='Título muito longo (máx. 120 caracteres).';erroEl.style.display='block';return;}
+  if(desc.length>300){erroEl.textContent='Descrição muito longa (máx. 300 caracteres).';erroEl.style.display='block';return;}
 
   var btn=document.getElementById('btn-salvar-modulo');btn.disabled=true;btn.textContent='Salvando...';
 
@@ -738,6 +770,16 @@ async function salvarAula(){
   var ordem=parseInt(document.getElementById('add-ordem').value)||1;
   var erroEl=document.getElementById('add-erro');erroEl.style.display='none';
   if(!titulo||!url){erroEl.textContent='Preencha título e link.';erroEl.style.display='block';return;}
+  // Validar URL
+  if(tipo==='video'){
+    var urlValida=url.includes('youtube.com')||url.includes('youtu.be')||url.includes('vimeo.com');
+    if(!urlValida){erroEl.textContent='Use apenas links do YouTube ou Vimeo para vídeos.';erroEl.style.display='block';return;}
+  }
+  if(tipo==='pdf'){
+    var urlOk=url.startsWith('https://');
+    if(!urlOk){erroEl.textContent='O link do PDF deve começar com https://.';erroEl.style.display='block';return;}
+  }
+  if(titulo.length>200){erroEl.textContent='Título muito longo (máx. 200 caracteres).';erroEl.style.display='block';return;}
   var btn=document.getElementById('btn-salvar-aula');btn.disabled=true;btn.textContent='Salvando...';
   try{
     var r=await sb.from('aulas').insert({module_id:mid,tipo,titulo,url,ordem,ativo:true});
