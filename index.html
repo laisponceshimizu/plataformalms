@@ -760,13 +760,28 @@ async function enviarTicket(){
   var modId=document.getElementById('ticket-modulo').value||null;
   var erroEl=document.getElementById('ticket-erro');
   erroEl.style.display='none';
+
+  // Validações
   if(!assunto||!msg){erroEl.textContent='Preencha o assunto e a mensagem.';erroEl.style.display='block';return;}
+  if(assunto.length>150){erroEl.textContent='Assunto muito longo (máx. 150 caracteres).';erroEl.style.display='block';return;}
+  if(msg.length>2000){erroEl.textContent='Mensagem muito longa (máx. 2000 caracteres).';erroEl.style.display='block';return;}
+
+  // Rate limit: verificar quantos tickets abertos o usuário já tem
+  try{
+    var check=await sb.from('tickets').select('id',{count:'exact'}).eq('user_id',usuarioAtual.id).eq('status','aberto');
+    if((check.count||0)>=5){
+      erroEl.textContent='Você já tem 5 chamados abertos. Aguarde uma resposta antes de abrir novos.';
+      erroEl.style.display='block';
+      return;
+    }
+  }catch(e){}
+
   try{
     var r=await sb.from('tickets').insert({
       user_id:usuarioAtual.id,
       email:usuarioAtual.email,
-      assunto,
-      mensagem:msg,
+      assunto:assunto.substring(0,150),
+      mensagem:msg.substring(0,2000),
       module_id:modId?parseInt(modId):null,
       status:'aberto'
     });
