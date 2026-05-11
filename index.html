@@ -709,7 +709,7 @@ function renderizarFaq(filtro){
     cat.perguntas.forEach(function(item,i){
       var id='faq_'+cat.cat.replace(/\s/g,'_')+'_'+i;
       html+='<div class="faq-item" id="'+id+'">'
-        +'<div class="faq-pergunta" onclick="toggleFaq(''+id+'')">'
+        +'<div class="faq-pergunta" onclick="toggleFaq(&quot;'+id+'&quot;)">'
         +'<div class="faq-texto">'+item.p+'</div>'
         +'<div class="faq-icone">+</div>'
         +'</div>'
