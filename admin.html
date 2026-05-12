@@ -813,11 +813,89 @@ function abrirDetalhe(uid){
       +'<div style="font-size:11px;color:#4A4A5A;min-width:30px;text-align:right;">'+mp+'%</div>'
       +'<div style="font-size:14px;">'+(done?'✅':'⬜')+'</div></div>';
   }).join('');
-  document.getElementById('det-corpo').innerHTML=
-    '<div class="det-user"><div class="det-av">'+ini+'</div><div><div class="det-nome">'+nome+'</div><div class="det-email">'+u.email+'</div><div style="font-size:11px;color:#4A4A5A;margin-top:2px;">Desde '+fmtData(u.created_at)+'</div></div></div>'
-    +'<div class="det-stats"><div class="ds"><div class="ds-v">'+(u.avg_progress||0)+'%</div><div class="ds-l">Progresso</div></div><div class="ds"><div class="ds-v" style="color:#22C55E;">'+(u.modules_done||0)+'</div><div class="ds-l">Concluídos</div></div><div class="ds"><div style="margin-top:4px;">'+pillStatus(getStatus(u))+'</div><div class="ds-l">Status</div></div></div>'
-    +'<div style="font-size:12px;font-weight:600;color:#4A4A5A;text-transform:uppercase;letter-spacing:.4px;margin-bottom:.75rem;">Módulos</div>'+modRows;
+  var corpo=document.getElementById('det-corpo');
+  corpo.innerHTML='';
+
+  // Cabeçalho do usuário
+  var userDiv=document.createElement('div'); userDiv.className='det-user';
+  userDiv.innerHTML='<div class="det-av">'+ini+'</div><div><div class="det-nome">'+nome+'</div><div class="det-email">'+u.email+'</div><div style="font-size:11px;color:#4A4A5A;margin-top:2px;">Desde '+fmtData(u.created_at)+'</div></div>';
+  corpo.appendChild(userDiv);
+
+  // Stats
+  var statsDiv=document.createElement('div'); statsDiv.className='det-stats';
+  statsDiv.innerHTML='<div class="ds"><div class="ds-v">'+(u.avg_progress||0)+'%</div><div class="ds-l">Progresso</div></div>'
+    +'<div class="ds"><div class="ds-v" style="color:#22C55E;">'+(u.modules_done||0)+'</div><div class="ds-l">Concluídos</div></div>'
+    +'<div class="ds"><div style="margin-top:4px;">'+pillStatus(getStatus(u))+'</div><div class="ds-l">Status</div></div>';
+  corpo.appendChild(statsDiv);
+
+  // Ações do usuário
+  var acoesDiv=document.createElement('div');
+  acoesDiv.style.cssText='margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid #252530;';
+  acoesDiv.innerHTML='<div style="font-size:11px;font-weight:600;color:#4A4A5A;text-transform:uppercase;letter-spacing:.4px;margin-bottom:.625rem;">Ações</div>';
+
+  // Botão redefinir senha
+  var btnSenha=document.createElement('button');
+  btnSenha.className='btn btn-ghost';
+  btnSenha.style.cssText='width:100%;justify-content:center;margin-bottom:8px;font-size:12px;';
+  btnSenha.textContent='🔑 Enviar e-mail de redefinição de senha';
+  btnSenha.id='btn-reset-'+u.user_id;
+  btnSenha.onclick=(function(email, userId){
+    return function(){ enviarResetSenha(email, userId); };
+  })(u.email, u.user_id);
+  acoesDiv.appendChild(btnSenha);
+
+  // Mensagem de feedback
+  var feedbackDiv=document.createElement('div');
+  feedbackDiv.id='feedback-reset-'+u.user_id;
+  feedbackDiv.style.cssText='font-size:12px;margin-top:6px;display:none;padding:8px 12px;border-radius:8px;';
+  acoesDiv.appendChild(feedbackDiv);
+  corpo.appendChild(acoesDiv);
+
+  // Lista de módulos
+  var modLabel=document.createElement('div');
+  modLabel.style.cssText='font-size:12px;font-weight:600;color:#4A4A5A;text-transform:uppercase;letter-spacing:.4px;margin-bottom:.75rem;';
+  modLabel.textContent='Módulos';
+  corpo.appendChild(modLabel);
+
+  var modDiv=document.createElement('div');
+  modDiv.innerHTML=modRows;
+  corpo.appendChild(modDiv);
+
   document.getElementById('painel-detalhe').style.display='flex';
+}
+
+async function enviarResetSenha(email, userId){
+  if(modoDemo){
+    mostrarToast('Modo demo — e-mail não enviado realmente');
+    return;
+  }
+  var btn=document.getElementById('btn-reset-'+userId);
+  var fb=document.getElementById('feedback-reset-'+userId);
+  if(btn) { btn.disabled=true; btn.textContent='Enviando...'; }
+  try{
+    var r=await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + '/index.html'
+    });
+    if(r.error) throw r.error;
+    if(fb){
+      fb.style.display='block';
+      fb.style.background='rgba(34,197,94,.1)';
+      fb.style.border='1px solid rgba(34,197,94,.3)';
+      fb.style.color='#22C55E';
+      fb.textContent='✅ E-mail enviado para '+email;
+    }
+    if(btn){ btn.textContent='✓ E-mail enviado'; }
+    mostrarToast('E-mail de redefinição enviado!');
+  }catch(e){
+    if(fb){
+      fb.style.display='block';
+      fb.style.background='rgba(248,113,113,.1)';
+      fb.style.border='1px solid rgba(248,113,113,.3)';
+      fb.style.color='#f87171';
+      fb.textContent='Erro: '+e.message;
+    }
+    if(btn){ btn.disabled=false; btn.textContent='🔑 Enviar e-mail de redefinição de senha'; }
+  }
 }
 function fecharDetalhe(){document.getElementById('painel-detalhe').style.display='none';}
 
