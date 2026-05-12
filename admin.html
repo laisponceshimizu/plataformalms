@@ -208,6 +208,7 @@ textarea{resize:vertical;min-height:60px;}
       <div class="nav-aba" onclick="trocarAba('conteudo',this)">📹 Conteúdo</div>
       <div class="nav-aba" onclick="trocarAba('modulos-stats',this)">Desempenho</div>
       <div class="nav-aba" onclick="trocarAba('suporte',this)">💬 Suporte</div>
+      <div class="nav-aba" onclick="trocarAba('faq-admin',this)">❓ FAQ</div>
     </div>
 
     <!-- VISÃO GERAL -->
@@ -293,6 +294,20 @@ textarea{resize:vertical;min-height:60px;}
   </div>
 </div>
 
+    <!-- FAQ ADMIN -->
+    <div id="aba-faq-admin" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
+        <div>
+          <div class="sec-titulo" style="margin:0;">Perguntas Frequentes</div>
+          <div style="font-size:12px;color:#4A4A5A;margin-top:3px;">Gerencie as perguntas e respostas exibidas na plataforma</div>
+        </div>
+        <button class="btn btn-primary" onclick="abrirModalFaq()">+ Nova pergunta</button>
+      </div>
+      <div id="faq-admin-lista"><div class="loading-msg">Carregando...</div></div>
+    </div>
+  </div>
+</div>
+
 <!-- ══ MODAL: CRIAR / EDITAR MÓDULO ══ -->
 <div class="modal-overlay" id="modal-modulo">
   <div class="modal-box">
@@ -321,6 +336,32 @@ textarea{resize:vertical;min-height:60px;}
     <div style="display:flex;gap:10px;margin-top:1.25rem;">
       <button class="btn btn-ghost" style="flex:1;justify-content:center;" onclick="fecharModalModulo()">Cancelar</button>
       <button class="btn btn-primary" style="flex:1;justify-content:center;" id="btn-salvar-modulo" onclick="salvarModulo()">Salvar módulo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: CRIAR / EDITAR FAQ ══ -->
+<div class="modal-overlay" id="modal-faq">
+  <div class="modal-box">
+    <div class="modal-titulo" id="modal-faq-titulo">+ Nova pergunta</div>
+    <label>Categoria</label>
+    <input type="text" id="faq-categoria" placeholder="Ex: Acesso e conta" list="faq-cats">
+    <datalist id="faq-cats">
+      <option value="Acesso e conta">
+      <option value="Módulos e progresso">
+      <option value="Conteúdo">
+      <option value="Problemas técnicos">
+    </datalist>
+    <label>Pergunta</label>
+    <input type="text" id="faq-pergunta" placeholder="Ex: Como faço para criar minha conta?">
+    <label>Resposta</label>
+    <textarea id="faq-resposta" rows="4" placeholder="Digite a resposta completa..."></textarea>
+    <label>Ordem</label>
+    <input type="number" id="faq-ordem" value="1" min="1">
+    <div class="msg-erro" id="faq-erro" style="margin-top:10px;display:none;"></div>
+    <div style="display:flex;gap:10px;margin-top:1.25rem;">
+      <button class="btn btn-ghost" style="flex:1;justify-content:center;" onclick="fecharModalFaq()">Cancelar</button>
+      <button class="btn btn-primary" style="flex:1;justify-content:center;" id="btn-salvar-faq" onclick="salvarFaq()">Salvar</button>
     </div>
   </div>
 </div>
@@ -741,13 +782,14 @@ function filtrarClientes(){
 }
 
 function trocarAba(nome,el){
-  ['visao','clientes','modulos-gestao','conteudo','modulos-stats','suporte'].forEach(function(a){
+  ['visao','clientes','modulos-gestao','conteudo','modulos-stats','suporte','faq-admin'].forEach(function(a){
     var el2=document.getElementById('aba-'+a);
     if(el2) el2.style.display=a===nome?'block':'none';
   });
   document.querySelectorAll('.nav-aba').forEach(function(a){a.classList.remove('ativa');});
   if(el)el.classList.add('ativa');
   if(nome==='suporte') carregarTicketsAdmin();
+  if(nome==='faq-admin') carregarFaqAdmin();
 }
 
 // ── ADICIONAR CONTEÚDO
@@ -899,8 +941,152 @@ async function enviarResetSenha(email, userId){
 }
 function fecharDetalhe(){document.getElementById('painel-detalhe').style.display='none';}
 
+// ── FAQ ADMIN
+var todosFaq=[];
+var editandoFaqId=null;
+
+async function carregarFaqAdmin(){
+  var cont=document.getElementById('faq-admin-lista');
+  if(!cont) return;
+  if(modoDemo){
+    todosFaq=[
+      {id:1,categoria:'Acesso e conta',pergunta:'Como faço para criar minha conta?',resposta:'Acesse a tela de login e clique em "Criar conta".',ordem:1,ativo:true},
+      {id:2,categoria:'Acesso e conta',pergunta:'Esqueci minha senha. O que faço?',resposta:'Na tela de login clique em "Esqueci minha senha".',ordem:2,ativo:true},
+      {id:3,categoria:'Módulos e progresso',pergunta:'Os módulos precisam ser feitos em ordem?',resposta:'Sim, cada módulo é liberado após a conclusão do anterior.',ordem:3,ativo:true},
+    ];
+    renderizarFaqAdmin();
+    return;
+  }
+  try{
+    var r=await sb.from('faq').select('*').order('ordem');
+    todosFaq=r.data||[];
+    renderizarFaqAdmin();
+  }catch(e){cont.innerHTML='<div class="loading-msg">Erro ao carregar FAQ. Execute o faq.sql no Supabase primeiro.</div>';}
+}
+
+function renderizarFaqAdmin(){
+  var cont=document.getElementById('faq-admin-lista');
+  if(!cont) return;
+  if(!todosFaq.length){
+    cont.innerHTML='<div class="loading-msg">Nenhuma pergunta cadastrada ainda.</div>';
+    return;
+  }
+  // Agrupar por categoria
+  var cats={};
+  todosFaq.forEach(function(f){
+    if(!cats[f.categoria]) cats[f.categoria]=[];
+    cats[f.categoria].push(f);
+  });
+  cont.innerHTML='';
+  Object.keys(cats).forEach(function(cat){
+    var catDiv=document.createElement('div');
+    catDiv.style.cssText='margin-bottom:1.5rem;';
+    var catLabel=document.createElement('div');
+    catLabel.style.cssText='font-size:11px;font-weight:600;color:#4A4A5A;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.625rem;';
+    catLabel.textContent=cat;
+    catDiv.appendChild(catLabel);
+    cats[cat].forEach(function(f){
+      var row=document.createElement('div');
+      row.style.cssText='background:#141417;border:1px solid #252530;border-radius:12px;padding:1rem 1.25rem;margin-bottom:8px;display:flex;align-items:flex-start;gap:12px;';
+      var info=document.createElement('div');
+      info.style.cssText='flex:1;';
+      var perg=document.createElement('div');
+      perg.style.cssText='font-size:13px;font-weight:600;margin-bottom:4px;';
+      perg.textContent=f.pergunta;
+      var resp=document.createElement('div');
+      resp.style.cssText='font-size:12px;color:#8A8A9A;line-height:1.5;';
+      resp.textContent=f.resposta;
+      var meta=document.createElement('div');
+      meta.style.cssText='font-size:10px;color:#4A4A5A;margin-top:6px;';
+      meta.textContent='Ordem: '+f.ordem+' · '+(f.ativo?'Visível':'Oculta');
+      info.appendChild(perg);info.appendChild(resp);info.appendChild(meta);
+      row.appendChild(info);
+      var acoes=document.createElement('div');
+      acoes.style.cssText='display:flex;gap:6px;flex-shrink:0;';
+      var be=document.createElement('button');
+      be.className='btn btn-ghost btn-sm';
+      be.textContent='✏️ Editar';
+      be.onclick=(function(id){return function(){abrirModalFaq(id);};})(f.id);
+      var bd=document.createElement('button');
+      bd.className='btn btn-danger btn-sm';
+      bd.textContent='✕';
+      bd.onclick=(function(id,perg){return function(){excluirFaq(id,perg);};})(f.id,f.pergunta);
+      acoes.appendChild(be);acoes.appendChild(bd);
+      row.appendChild(acoes);
+      catDiv.appendChild(row);
+    });
+    cont.appendChild(catDiv);
+  });
+}
+
+function abrirModalFaq(id){
+  editandoFaqId=id||null;
+  var f=id?todosFaq.find(function(x){return x.id===id;}):null;
+  document.getElementById('modal-faq-titulo').textContent=f?'✏️ Editar pergunta':'+ Nova pergunta';
+  document.getElementById('faq-categoria').value=f?f.categoria:'';
+  document.getElementById('faq-pergunta').value=f?f.pergunta:'';
+  document.getElementById('faq-resposta').value=f?f.resposta:'';
+  document.getElementById('faq-ordem').value=f?f.ordem:(todosFaq.length+1);
+  document.getElementById('faq-erro').style.display='none';
+  document.getElementById('modal-faq').classList.add('aberto');
+}
+function fecharModalFaq(){document.getElementById('modal-faq').classList.remove('aberto');editandoFaqId=null;}
+
+async function salvarFaq(){
+  var cat=document.getElementById('faq-categoria').value.trim();
+  var perg=document.getElementById('faq-pergunta').value.trim();
+  var resp=document.getElementById('faq-resposta').value.trim();
+  var ordem=parseInt(document.getElementById('faq-ordem').value)||1;
+  var erroEl=document.getElementById('faq-erro');erroEl.style.display='none';
+  if(!cat||!perg||!resp){erroEl.textContent='Preencha todos os campos.';erroEl.style.display='block';return;}
+  if(perg.length>300){erroEl.textContent='Pergunta muito longa (máx. 300 caracteres).';erroEl.style.display='block';return;}
+  if(resp.length>1000){erroEl.textContent='Resposta muito longa (máx. 1000 caracteres).';erroEl.style.display='block';return;}
+  var btn=document.getElementById('btn-salvar-faq');btn.disabled=true;btn.textContent='Salvando...';
+  if(modoDemo){
+    if(editandoFaqId){
+      var f=todosFaq.find(function(x){return x.id===editandoFaqId;});
+      if(f){f.categoria=cat;f.pergunta=perg;f.resposta=resp;f.ordem=ordem;}
+    } else {
+      todosFaq.push({id:Date.now(),categoria:cat,pergunta:perg,resposta:resp,ordem:ordem,ativo:true});
+    }
+    renderizarFaqAdmin();fecharModalFaq();
+    mostrarToast(editandoFaqId?'Pergunta atualizada (demo)!':'Pergunta criada (demo)!');
+    btn.disabled=false;btn.textContent='Salvar';return;
+  }
+  try{
+    var payload={categoria:cat,pergunta:perg,resposta:resp,ordem:ordem};
+    var r;
+    if(editandoFaqId){
+      r=await sb.from('faq').update(payload).eq('id',editandoFaqId);
+    } else {
+      r=await sb.from('faq').insert(payload);
+    }
+    if(r.error) throw r.error;
+    var rf=await sb.from('faq').select('*').order('ordem');
+    todosFaq=rf.data||[];
+    renderizarFaqAdmin();fecharModalFaq();
+    mostrarToast(editandoFaqId?'Pergunta atualizada!':'Pergunta criada!');
+  }catch(e){erroEl.textContent='Erro: '+e.message;erroEl.style.display='block';}
+  btn.disabled=false;btn.textContent='Salvar';
+}
+
+async function excluirFaq(id,perg){
+  if(!confirm('Excluir a pergunta "'+perg+'"?')) return;
+  if(modoDemo){
+    todosFaq=todosFaq.filter(function(f){return f.id!==id;});
+    renderizarFaqAdmin();mostrarToast('Pergunta excluída (demo)');return;
+  }
+  try{
+    var r=await sb.from('faq').delete().eq('id',id);
+    if(r.error) throw r.error;
+    var rf=await sb.from('faq').select('*').order('ordem');
+    todosFaq=rf.data||[];
+    renderizarFaqAdmin();mostrarToast('Pergunta excluída!');
+  }catch(e){mostrarToast('Erro: '+e.message,true);}
+}
+
 document.addEventListener('keydown',function(e){
-  if(e.key==='Escape'){fecharDetalhe();fecharModal();fecharModalModulo();}
+  if(e.key==='Escape'){fecharDetalhe();fecharModal();fecharModalModulo();fecharModalFaq();}
   if(e.key==='Enter'&&document.getElementById('tela-login').style.display!=='none') fazerLogin();
 });
 
