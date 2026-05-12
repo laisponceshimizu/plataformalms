@@ -318,6 +318,7 @@ async function entrarNoApp(user) {
   await carregarModulos();
   await carregarProgresso();
   await carregarAulasConcluidas();
+  await carregarFaqCliente();
   renderizarModulos();
 }
 function voltarLogin(){
@@ -667,32 +668,29 @@ function trocarTab(nome,el){
   if(nome==='suporte'){preencherSelectModulos();carregarTickets();}
 }
 
-// ── FAQ DATA
-var FAQ_DATA = [
-  {cat:'Acesso e conta', perguntas:[
-    {p:'Como faço para criar minha conta?', r:'Acesse a tela de login e clique em "Criar conta". Preencha seu nome, e-mail e uma senha com pelo menos 6 caracteres.'},
-    {p:'Esqueci minha senha. O que faço?', r:'Na tela de login clique em "Entrar", depois em "Esqueci minha senha". Você receberá um e-mail com link para redefinir.'},
-    {p:'Posso acessar de celular?', r:'Sim! A plataforma é responsiva e funciona em qualquer dispositivo — celular, tablet ou computador.'},
-  ]},
-  {cat:'Módulos e progresso', perguntas:[
-    {p:'Os módulos precisam ser feitos em ordem?', r:'Sim, cada módulo é liberado após a conclusão do anterior. Isso garante que você aprenda no ritmo certo.'},
-    {p:'Como o progresso é calculado?', r:'O progresso é calculado automaticamente. Quando você assiste um vídeo até o final, ele é marcado como concluído. O percentual do módulo reflete quantos vídeos você já concluiu.'},
-    {p:'Posso rever um módulo já concluído?', r:'Sim! Clique em "Revisitar" no módulo concluído para assistir novamente quando quiser.'},
-    {p:'O progresso é salvo se eu sair no meio?', r:'Sim. O progresso de cada aula só é salvo quando o vídeo termina completamente. Se você sair antes do fim, o vídeo não será marcado como concluído.'},
-  ]},
-  {cat:'Conteúdo', perguntas:[
-    {p:'Os vídeos ficam disponíveis para sempre?', r:'Sim. Enquanto sua conta estiver ativa, você tem acesso a todo o conteúdo da plataforma.'},
-    {p:'Posso baixar as apostilas?', r:'Sim. As apostilas em PDF podem ser baixadas clicando no botão "⬇ Baixar" na seção de materiais do módulo.'},
-    {p:'Novos conteúdos são adicionados?', r:'Sim. Nosso time adiciona novos vídeos e materiais regularmente. Fique de olho nas notificações!'},
-  ]},
-  {cat:'Problemas técnicos', perguntas:[
-    {p:'O vídeo não está carregando. O que faço?', r:'Verifique sua conexão com a internet. Se o problema persistir, tente recarregar a página (F5) ou limpar o cache do navegador. Se ainda assim não funcionar, abra um chamado de suporte.'},
-    {p:'Meu progresso não atualizou. O que aconteceu?', r:'O progresso é salvo automaticamente quando o vídeo termina. Certifique-se de assistir o vídeo até o final. Se o problema persistir, entre em contato com o suporte.'},
-    {p:'A plataforma está lenta. Como resolver?', r:'Tente usar outro navegador (recomendamos Chrome ou Edge atualizados). Também verifique se há outros programas pesados abertos no computador.'},
-  ]},
-];
+// ── FAQ DATA — carregado do Supabase
+var FAQ_DATA = [];
 
-var faqFiltrado = FAQ_DATA;
+async function carregarFaqCliente(){
+  try{
+    var r=await sb.from('faq').select('*').eq('ativo',true).order('ordem');
+    var rows=r.data||[];
+    // converter para formato {cat, perguntas:[{p,r}]}
+    var cats={};
+    rows.forEach(function(f){
+      if(!cats[f.categoria]) cats[f.categoria]=[];
+      cats[f.categoria].push({p:f.pergunta,r:f.resposta});
+    });
+    FAQ_DATA=Object.keys(cats).map(function(cat){return{cat:cat,perguntas:cats[cat]};});
+  }catch(e){
+    // fallback se tabela faq não existir ainda
+    FAQ_DATA=[
+      {cat:'Dúvidas gerais',perguntas:[
+        {p:'Como funciona a plataforma?',r:'Assista os vídeos de cada módulo em ordem. Seu progresso é salvo automaticamente.'},
+      ]}
+    ];
+  }
+}
 
 function renderizarFaq(filtro){
   var lista=document.getElementById('faq-lista');
