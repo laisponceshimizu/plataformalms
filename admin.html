@@ -223,7 +223,7 @@ select option{background:#1A3C6E;color:#fff;}
     <div id="aba-clientes" style="display:none;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
         <div class="sec-titulo" style="margin:0;">Todos os clientes</div>
-        <input type="text" id="busca" placeholder="Buscar..." oninput="filtrarClientes()" style="width:220px;padding:7px 12px;background:#141417;border:1px solid #252530;border-radius:8px;color:#fff;font-size:13px;outline:none;">
+        <input type="text" id="busca" placeholder="Buscar..." oninput="filtrarClientes()" style="width:220px;padding:7px 12px;background:#F5F8FB;border:1px solid #D1DCE8;border-radius:8px;color:#0D2B5E;font-size:13px;outline:none;">
       </div>
       <div class="tabela-wrap">
         <div class="tabela-header"><div class="th">Cliente</div><div class="th">Último acesso</div><div class="th">Progresso</div><div class="th">Módulos</div><div class="th">Status</div><div class="th">Ação</div></div>
@@ -590,7 +590,7 @@ function renderizarTudo(){
 function renderizarGestaoModulos(){
   var cont=document.getElementById('modulos-lista-gestao');
   if(!todosModulos.length){
-    cont.innerHTML='<div class="loading-msg" style="background:#141417;border:1px solid #252530;border-radius:12px;">Nenhum módulo cadastrado ainda. Clique em "+ Novo módulo" para começar.</div>';
+    cont.innerHTML='<div class="loading-msg" style="background:#F5F8FB;border:1px solid #D1DCE8;border-radius:12px;">Nenhum módulo cadastrado ainda. Clique em "+ Novo módulo" para começar.</div>';
     return;
   }
   var sorted=[...todosModulos].sort(function(a,b){return(a.ordem||0)-(b.ordem||0);});
@@ -865,7 +865,7 @@ function abrirDetalhe(uid){
 
   // Ações do usuário
   var acoesDiv=document.createElement('div');
-  acoesDiv.style.cssText='margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid #252530;';
+  acoesDiv.style.cssText='margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid #D1DCE8;';
   acoesDiv.innerHTML='<div style="font-size:11px;font-weight:600;color:#4A4A5A;text-transform:uppercase;letter-spacing:.4px;margin-bottom:.625rem;">Ações</div>';
 
   // Botão redefinir senha
@@ -980,17 +980,17 @@ function renderizarFaqAdmin(){
     catDiv.appendChild(catLabel);
     cats[cat].forEach(function(f){
       var row=document.createElement('div');
-      row.style.cssText='background:#141417;border:1px solid #252530;border-radius:12px;padding:1rem 1.25rem;margin-bottom:8px;display:flex;align-items:flex-start;gap:12px;';
+      row.style.cssText='background:#FFFFFF;border:1px solid #D1DCE8;border-radius:12px;padding:1rem 1.25rem;margin-bottom:8px;display:flex;align-items:flex-start;gap:12px;box-shadow:0 1px 4px rgba(13,43,94,.05);';
       var info=document.createElement('div');
       info.style.cssText='flex:1;';
       var perg=document.createElement('div');
-      perg.style.cssText='font-size:13px;font-weight:600;margin-bottom:4px;';
+      perg.style.cssText='font-size:13px;font-weight:600;margin-bottom:4px;color:#0D2B5E;';
       perg.textContent=f.pergunta;
       var resp=document.createElement('div');
-      resp.style.cssText='font-size:12px;color:#8A8A9A;line-height:1.5;';
+      resp.style.cssText='font-size:12px;color:#4A6080;line-height:1.5;';
       resp.textContent=f.resposta;
       var meta=document.createElement('div');
-      meta.style.cssText='font-size:10px;color:#4A4A5A;margin-top:6px;';
+      meta.style.cssText='font-size:10px;color:#6B8099;margin-top:6px;';
       meta.textContent='Ordem: '+f.ordem+' · '+(f.ativo?'Visível':'Oculta');
       info.appendChild(perg);info.appendChild(resp);info.appendChild(meta);
       row.appendChild(info);
@@ -1139,7 +1139,7 @@ function renderizarTicketsAdmin(){
     }
     var form=document.createElement('div'); form.className='ticket-adm-form'; form.id=formId;
     var ta=document.createElement('textarea'); ta.id='resp_'+t.id; ta.rows=3; ta.placeholder='Digite sua resposta...';
-    ta.style.cssText='width:100%;background:#1A1A1F;border:1px solid #35353f;border-radius:8px;color:#fff;padding:10px;font-size:13px;font-family:sans-serif;outline:none;resize:vertical;';
+    ta.style.cssText='width:100%;background:#F5F8FB;border:1.5px solid #D1DCE8;border-radius:8px;color:#0D2B5E;padding:10px;font-size:13px;font-family:sans-serif;outline:none;resize:vertical;';
     if(t.resposta) ta.value=t.resposta;
     form.appendChild(ta);
     var bw=document.createElement('div'); bw.style.cssText='display:flex;gap:8px;margin-top:8px;';
