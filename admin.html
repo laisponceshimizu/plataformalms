@@ -57,9 +57,9 @@ select option{background:#1A3C6E;color:#fff;}
 .azul{color:var(--ciano);} .verde{color:#0D7A5E;} .amber{color:var(--azul);} .roxo{color:#5B4FBE;}
 .stat-l{font-size:12px;color:var(--txt3);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:.3px;}
 .tabela-wrap{background:var(--card);border:0.5px solid var(--borda);border-radius:14px;overflow:hidden;margin-bottom:1.5rem;box-shadow:0 1px 4px rgba(13,43,94,.05);}
-.tabela-header{display:grid;grid-template-columns:2fr 1.5fr 1fr 80px 80px 90px;padding:.625rem 1.25rem;background:#F5F8FB;border-bottom:0.5px solid var(--borda);}
+.tabela-header{display:grid;grid-template-columns:2fr 1fr 1.5fr 1fr 80px 80px 90px;padding:.625rem 1.25rem;background:#F5F8FB;border-bottom:0.5px solid var(--borda);}
 .th{font-size:11px;color:var(--txt3);font-weight:700;text-transform:uppercase;letter-spacing:.4px;}
-.tabela-row{display:grid;grid-template-columns:2fr 1.5fr 1fr 80px 80px 90px;padding:.75rem 1.25rem;border-bottom:0.5px solid #F5F8FB;align-items:center;cursor:pointer;transition:background .15s;}
+.tabela-row{display:grid;grid-template-columns:2fr 1fr 1.5fr 1fr 80px 80px 90px;padding:.75rem 1.25rem;border-bottom:0.5px solid #F5F8FB;align-items:center;cursor:pointer;transition:background .15s;}
 .tabela-row:last-child{border-bottom:none;}
 .tabela-row:hover{background:#F9FBFD;}
 .td{font-size:13px;color:var(--txt);} .td.muted{color:var(--txt2);}
@@ -214,7 +214,7 @@ select option{background:#1A3C6E;color:#fff;}
       </div>
       <div class="sec-titulo">Últimos clientes</div>
       <div class="tabela-wrap">
-        <div class="tabela-header"><div class="th">Cliente</div><div class="th">Último acesso</div><div class="th">Progresso</div><div class="th">Módulos</div><div class="th">Status</div><div class="th">Ação</div></div>
+        <div class="tabela-header"><div class="th">Cliente</div><div class="th">Empresa</div><div class="th">Último acesso</div><div class="th">Progresso</div><div class="th">Módulos</div><div class="th">Status</div><div class="th">Ação</div></div>
         <div id="tabela-visao"><div class="loading-msg">Carregando...</div></div>
       </div>
     </div>
@@ -226,7 +226,7 @@ select option{background:#1A3C6E;color:#fff;}
         <input type="text" id="busca" placeholder="Buscar..." oninput="filtrarClientes()" style="width:220px;padding:7px 12px;background:#F5F8FB;border:1px solid #D1DCE8;border-radius:8px;color:#0D2B5E;font-size:13px;outline:none;">
       </div>
       <div class="tabela-wrap">
-        <div class="tabela-header"><div class="th">Cliente</div><div class="th">Último acesso</div><div class="th">Progresso</div><div class="th">Módulos</div><div class="th">Status</div><div class="th">Ação</div></div>
+        <div class="tabela-header"><div class="th">Cliente</div><div class="th">Empresa</div><div class="th">Último acesso</div><div class="th">Progresso</div><div class="th">Módulos</div><div class="th">Status</div><div class="th">Ação</div></div>
         <div id="tabela-clientes"><div class="loading-msg">Carregando...</div></div>
       </div>
     </div>
@@ -414,12 +414,12 @@ const DEMO_MODULOS=[
   {id:8,titulo:'Integração com Power BI',emoji:'📈',descricao:'Dashboards avançados',ordem:8},
 ];
 const DEMO_USERS=[
-  {user_id:'1',email:'joao@transportadora.com.br',full_name:'João Silva',created_at:'2026-01-10T09:00:00Z',avg_progress:80,modules_started:5,modules_done:3,last_activity:'2026-04-20T14:30:00Z'},
-  {user_id:'2',email:'maria@logistica.com.br',full_name:'Maria Costa',created_at:'2026-01-18T11:00:00Z',avg_progress:45,modules_started:3,modules_done:1,last_activity:'2026-04-19T10:00:00Z'},
-  {user_id:'3',email:'pedro@frota.com.br',full_name:'Pedro Alves',created_at:'2026-02-02T08:00:00Z',avg_progress:100,modules_started:8,modules_done:8,last_activity:'2026-04-15T16:00:00Z'},
-  {user_id:'4',email:'ana@grupo.com.br',full_name:'Ana Ferreira',created_at:'2026-02-20T14:00:00Z',avg_progress:20,modules_started:2,modules_done:0,last_activity:'2026-03-05T09:00:00Z'},
-  {user_id:'5',email:'carlos@empresa.com.br',full_name:'Carlos Mendes',created_at:'2026-03-01T10:00:00Z',avg_progress:0,modules_started:0,modules_done:0,last_activity:null},
-  {user_id:'6',email:'lucia@frotas.com.br',full_name:'Lúcia Santos',created_at:'2026-03-05T15:00:00Z',avg_progress:60,modules_started:4,modules_done:2,last_activity:'2026-04-22T08:00:00Z'},
+  {user_id:'1',email:'joao@transportadora.com.br',full_name:'João Silva',empresa:'Transportadora ABC',created_at:'2026-01-10T09:00:00Z',avg_progress:80,modules_started:5,modules_done:3,last_activity:'2026-04-20T14:30:00Z'},
+  {user_id:'2',email:'maria@logistica.com.br',full_name:'Maria Costa',empresa:'Logística XYZ',created_at:'2026-01-18T11:00:00Z',avg_progress:45,modules_started:3,modules_done:1,last_activity:'2026-04-19T10:00:00Z'},
+  {user_id:'3',email:'pedro@frota.com.br',full_name:'Pedro Alves',empresa:'Frota Sul',created_at:'2026-02-02T08:00:00Z',avg_progress:100,modules_started:8,modules_done:8,last_activity:'2026-04-15T16:00:00Z'},
+  {user_id:'4',email:'ana@grupo.com.br',full_name:'Ana Ferreira',empresa:'Grupo Norte',created_at:'2026-02-20T14:00:00Z',avg_progress:20,modules_started:2,modules_done:0,last_activity:'2026-03-05T09:00:00Z'},
+  {user_id:'5',email:'carlos@empresa.com.br',full_name:'Carlos Mendes',empresa:'Empresa Leste',created_at:'2026-03-01T10:00:00Z',avg_progress:0,modules_started:0,modules_done:0,last_activity:null},
+  {user_id:'6',email:'lucia@frotas.com.br',full_name:'Lúcia Santos',empresa:'Frotas Oeste',created_at:'2026-03-05T15:00:00Z',avg_progress:60,modules_started:4,modules_done:2,last_activity:'2026-04-22T08:00:00Z'},
 ];
 const DEMO_PROG=[
   {user_id:'1',module_id:1,percent:100,completed:true},{user_id:'1',module_id:2,percent:100,completed:true},
@@ -554,6 +554,7 @@ function buildRows(users){
     var pct=u.avg_progress||0,st=getStatus(u),ini=(u.full_name||u.email)[0].toUpperCase();
     return'<div class="tabela-row" onclick="abrirDetalhe(\''+u.user_id+'\')">'
       +'<div class="td"><div class="cli-info"><div class="avatar">'+ini+'</div><div><div class="cli-nome">'+(u.full_name||'—')+'</div><div class="cli-email">'+u.email+'</div></div></div></div>'
+      +'<div class="td muted">'+(u.empresa||'—')+'</div>'
       +'<div class="td muted">'+fmtData(u.last_activity)+'</div>'
       +'<div class="td"><div class="prog-inline"><div class="progbar"><div class="progbar-fill" style="width:'+pct+'%"></div></div><div class="prog-pct">'+pct+'%</div></div></div>'
       +'<div class="td muted">'+(u.modules_done||0)+'/'+totalMods+'</div>'
@@ -770,7 +771,7 @@ function renderizarConteudo(){
 
 function filtrarClientes(){
   var q=document.getElementById('busca').value.toLowerCase();
-  var f=todosUsers.filter(function(u){return(u.full_name||'').toLowerCase().includes(q)||u.email.toLowerCase().includes(q);});
+  var f=todosUsers.filter(function(u){return(u.full_name||'').toLowerCase().includes(q)||u.email.toLowerCase().includes(q)||(u.empresa||'').toLowerCase().includes(q);});
   document.getElementById('tabela-clientes').innerHTML=buildRows(f);
 }
 
