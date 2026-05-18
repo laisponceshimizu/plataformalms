@@ -375,7 +375,9 @@ select option{background:#1A3C6E;color:#fff;}
     <select id="add-modulo"></select>
     <label>Título da aula</label>
     <input type="text" id="add-titulo" placeholder="Ex: Aula 1 — Visão geral do dashboard">
-    <label>Link (YouTube ou PDF)</label>
+    <label style="margin-top:10px;">Descrição / Palavras-chave <span style="font-weight:400;color:var(--txt3);">(ajuda na busca)</span></label>
+    <textarea id="add-descricao" placeholder="Ex: alertas, BDV, jornada, relatório de mensagens..." rows="2" style="resize:vertical;font-size:13px;padding:9px 12px;border:1px solid var(--borda);border-radius:8px;background:#F5F8FB;color:var(--txt);font-family:inherit;width:100%;box-sizing:border-box;"></textarea>
+    <label style="margin-top:10px;">Link (YouTube ou PDF)</label>
     <input type="text" id="add-url" placeholder="https://youtu.be/... ou link do PDF">
     <label>Ordem (número)</label>
     <input type="number" id="add-ordem" value="1" min="1">
@@ -863,13 +865,14 @@ function abrirModalAdicionar(moduleId){
   document.getElementById('add-erro').style.display='none';
   document.getElementById('modal-adicionar').classList.add('aberto');
 }
-function fecharModal(){document.getElementById('modal-adicionar').classList.remove('aberto');}
+function fecharModal(){document.getElementById('modal-adicionar').classList.remove('aberto');document.getElementById('add-descricao').value='';}
 
 async function salvarAula(){
   if(modoDemo){alert('Em modo demonstração não é possível salvar. Faça login com sua conta Supabase.');return;}
   var tipo=document.getElementById('add-tipo').value;
   var mid=parseInt(document.getElementById('add-modulo').value);
   var titulo=document.getElementById('add-titulo').value.trim();
+  var descricao=document.getElementById('add-descricao').value.trim();
   var url=document.getElementById('add-url').value.trim();
   var ordem=parseInt(document.getElementById('add-ordem').value)||1;
   var erroEl=document.getElementById('add-erro');erroEl.style.display='none';
@@ -886,7 +889,7 @@ async function salvarAula(){
   if(titulo.length>200){erroEl.textContent='Título muito longo (máx. 200 caracteres).';erroEl.style.display='block';return;}
   var btn=document.getElementById('btn-salvar-aula');btn.disabled=true;btn.textContent='Salvando...';
   try{
-    var r=await sb.from('aulas').insert({module_id:mid,tipo,titulo,url,ordem,ativo:true});
+    var r=await sb.from('aulas').insert({module_id:mid,tipo,titulo,descricao:descricao||null,url,ordem,ativo:true});
     if(r.error)throw r.error;
     fecharModal();await carregarAulas();renderizarConteudo();
     mostrarToast('Conteúdo adicionado!');

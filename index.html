@@ -272,7 +272,7 @@ const URL_SB = 'https://bnysqxhhbajdxwputaea.supabase.co';
 const KEY_SB = 'sb_publishable_aqIlZf8t8VnJyPT-9j1MTw_6Wa5QcRy';
 
 let sb, modoAtual='entrar', usuarioAtual=null, progressoUsuario={}, aulasCache={};
-let todosModulos=[];
+let todosModulos=[], todasAulasCliente=[];
 
 // ── controle de players YouTube
 let ytPlayers={};         // ytPlayerId → player
@@ -326,6 +326,7 @@ async function entrarNoApp(user) {
   await carregarProgresso();
   await carregarAulasConcluidas();
   await carregarFaqCliente();
+  await carregarTodasAulasCliente();
   renderizarModulos();
 }
 function voltarLogin(){
@@ -435,7 +436,12 @@ function getDesbloq(id,idx){if(idx<=1)return true;return getConcluido(todosModul
 function filtrarModulos(){
   var q=document.getElementById('trilha-busca').value.toLowerCase().trim();
   if(!q){renderizarModulos();return;}
-  var filtrados=todosModulos.filter(function(m){return(m.titulo||'').toLowerCase().includes(q);});
+  var modulosComVideo=todasAulasCliente
+    .filter(function(a){return(a.titulo||'').toLowerCase().includes(q)||(a.descricao||'').toLowerCase().includes(q);})
+    .map(function(a){return a.module_id;});
+  var filtrados=todosModulos.filter(function(m){
+    return(m.titulo||'').toLowerCase().includes(q)||(m.descricao||'').toLowerCase().includes(q)||modulosComVideo.includes(m.id);
+  });
   renderizarModulos(filtrados);
 }
 
@@ -707,6 +713,13 @@ function trocarTab(nome,el){
 
 // ── FAQ DATA — carregado do Supabase
 var FAQ_DATA = [];
+
+async function carregarTodasAulasCliente(){
+  try{
+    var r=await sb.from('aulas').select('id,module_id,titulo,descricao').eq('ativo',true);
+    todasAulasCliente=r.data||[];
+  }catch(e){todasAulasCliente=[];}
+}
 
 async function carregarFaqCliente(){
   try{
