@@ -971,13 +971,23 @@ async function dragDropAula(e){
   var idA=dragSrcAula.dataset.id, idB=e.currentTarget.dataset.id;
   var modA=dragSrcAula.dataset.moduleId, modB=e.currentTarget.dataset.moduleId;
   if(modA!==modB)return;
-  var a=todasAulas.find(function(x){return x.id===idA;}), b=todasAulas.find(function(x){return x.id===idB;});
-  if(!a||!b)return;
-  var tmp=a.ordem;a.ordem=b.ordem;b.ordem=tmp;
+
+  // Pegar lista ordenada do módulo e reposicionar
+  var lista=todasAulas.filter(function(x){return String(x.module_id)===String(modA);})
+    .sort(function(a,b){return(a.ordem||0)-(b.ordem||0);});
+  var iA=lista.findIndex(function(x){return x.id===idA;});
+  var iB=lista.findIndex(function(x){return x.id===idB;});
+  if(iA<0||iB<0)return;
+
+  // Reposicionar no array e reatribuir ordens sequenciais
+  lista.splice(iB,0,lista.splice(iA,1)[0]);
+  lista.forEach(function(x,i){x.ordem=i+1;});
+
   renderizarConteudo();
+
   if(!modoDemo&&sb){
     try{
-      await Promise.all([sb.from('aulas').update({ordem:a.ordem}).eq('id',idA),sb.from('aulas').update({ordem:b.ordem}).eq('id',idB)]);
+      await Promise.all(lista.map(function(x){return sb.from('aulas').update({ordem:x.ordem}).eq('id',x.id);}));
       mostrarToast('Ordem atualizada!');
     }catch(err){mostrarToast('Erro ao salvar ordem',true);}
   }
