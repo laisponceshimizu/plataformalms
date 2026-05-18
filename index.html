@@ -214,15 +214,14 @@ select option{background:#1A3C6E;color:#fff;}
     <div class="stats">
       <div class="stat"><div class="stat-n" id="s-concluidos">0</div><div class="stat-l">Módulos concluídos</div></div>
       <div class="stat"><div class="stat-n" id="s-progresso">0%</div><div class="stat-l">Progresso geral</div></div>
-      <div class="stat"><div class="stat-n" id="s-certs">0</div><div class="stat-l">Certificados</div></div>
+      <div class="stat"><div class="stat-n" id="s-certs">0</div><div class="stat-l">Certificados obtidos</div></div>
     </div>
     <div class="cert-banner" id="cert-banner">
       <div class="cert-banner-icon">🏆</div>
       <div class="cert-banner-text">
         <div class="cert-banner-title">Parabéns! Você concluiu todos os módulos.</div>
-        <div class="cert-banner-sub">Seu certificado de conclusão está disponível para download.</div>
+        <div class="cert-banner-sub">Continue avançando para desbloquear mais certificados.</div>
       </div>
-      <button class="btn-cert" onclick="baixarCertificado()">⬇ Baixar Certificado</button>
     </div>
     <div class="nav-cliente">
       <div class="nav-tab ativa" id="tab-trilha" onclick="trocarTab('trilha',this)">🎓 Trilha</div>
@@ -453,7 +452,7 @@ async function recalcularProgresso(moduleId){
 
 function getPct(id){return progressoUsuario[id]?progressoUsuario[id].percent:0;}
 function getConcluido(id){return !!(progressoUsuario[id]&&progressoUsuario[id].completed);}
-function getDesbloq(id,idx){if(idx<=1)return true;return getConcluido(todosModulos[idx-2].id);}
+function getDesbloq(id,idx){return true;}
 
 // ── RENDER LISTA DE MÓDULOS
 function filtrarModulos(){
@@ -476,30 +475,37 @@ function renderizarModulos(modsFiltrados, busca){
   var pg=total?Math.round(todosModulos.reduce(function(a,m){return a+getPct(m.id);},0)/total):0;
   document.getElementById('s-concluidos').textContent=conc;
   var sp=document.getElementById('s-progresso');sp.textContent=pg+'%';sp.className='stat-n destaque';
-  var todosConc=conc===total&&total>0;
-  document.getElementById('s-certs').textContent=todosConc?1:0;
-  document.getElementById('cert-banner').style.display=todosConc?'flex':'none';
+  document.getElementById('s-certs').textContent=conc;
+  var banner=document.getElementById('cert-banner');
+  if(conc>0){
+    banner.style.display='flex';
+    banner.querySelector('.cert-banner-title').textContent=conc===total?'Parabéns! Você concluiu todos os módulos.':'Você tem '+conc+' certificado'+(conc>1?'s':'')+' disponíve'+(conc>1?'is':'l')+'!';
+    banner.querySelector('.cert-banner-sub').textContent=conc===total?'Todos os certificados estão disponíveis em cada módulo concluído.':'Continue avançando para desbloquear mais certificados.';
+  }else{
+    banner.style.display='none';
+  }
 
   if(!mods.length){document.getElementById('lista-modulos').innerHTML='<div style="text-align:center;padding:2rem;color:var(--txt3);font-size:14px;">Nenhum módulo encontrado.</div>';return;}
   var html='';
   mods.forEach(function(m,i){
     var idx=todosModulos.indexOf(m);
-    var pct=getPct(m.id), done=getConcluido(m.id), desbloq=getDesbloq(m.id,idx);
-    var nc=done?'mod-num concluido':desbloq?'mod-num':'mod-num bloq';
-    var bc=desbloq?'modulo':'modulo bloqueado';
-    var botao=desbloq?'<button onclick="event.stopPropagation();abrirModulo('+m.id+')" style="background:'+(done?'#222228':'#00BFFF')+';color:'+(done?'#8A8A9A':'#000')+';border:none;border-radius:7px;padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;">'+(done?'Revisitar':'Continuar ▶')+'</button>':'';
+    var pct=getPct(m.id), done=getConcluido(m.id);
+    var nc=done?'mod-num concluido':'mod-num';
     var barra=pct>0?'<div class="progbar"><div class="progbar-fill" style="width:'+pct+'%"></div></div>':'';
     var numConteudo=done?'✓':(m.emoji||i+1);
+    var botoes='<div style="display:flex;gap:8px;flex-shrink:0;">'
+      +(done?'<button onclick="event.stopPropagation();baixarCertificado('+m.id+',\''+m.titulo.replace(/'/g,"\\'")+'\')" style="background:linear-gradient(135deg,#C9A84C,#E8C96A);color:#0D2B5E;border:none;border-radius:7px;padding:7px 14px;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap;">🏆 Certificado</button>':'')
+      +'<button onclick="event.stopPropagation();abrirModulo('+m.id+')" style="background:'+(done?'#E8EEF5':'#00BFFF')+';color:'+(done?'#4A6080':'#000')+';border:none;border-radius:7px;padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">'+(done?'Revisitar':'Continuar ▶')+'</button>'
+      +'</div>';
 
     var aulasMatch=q?todasAulasCliente.filter(function(a){
       return a.module_id===m.id&&((a.titulo||'').toLowerCase().includes(q)||(a.descricao||'').toLowerCase().includes(q));
     }):[];
 
     var cardClass=aulasMatch.length?'modulo-wrap':'';
-    var moduloClass=aulasMatch.length?bc:bc;
 
     html+='<div class="'+cardClass+'">'
-      +'<div class="'+moduloClass+'" onclick="'+(desbloq?'abrirModulo('+m.id+')':'')+'">'
+      +'<div class="modulo" onclick="abrirModulo('+m.id+')">'
       +'<div class="'+nc+'">'+numConteudo+'</div>'
       +'<div class="mod-info">'
       +'<div class="mod-titulo">'+m.titulo+'</div>'
@@ -507,7 +513,7 @@ function renderizarModulos(modsFiltrados, busca){
       +barra
       +'</div>'
       +'<div class="mod-pct">'+(done?'':pct+'%')+'</div>'
-      +botao
+      +botoes
       +'</div>';
 
     if(aulasMatch.length){
@@ -749,10 +755,11 @@ document.addEventListener('keydown',function(e){
 });
 
 // ── CERTIFICADO
-function baixarCertificado(){
-  var nome=(usuarioAtual&&(usuarioAtual.user_metadata&&usuarioAtual.user_metadata.full_name))||usuarioAtual&&usuarioAtual.email||'Participante';
+function baixarCertificado(moduleId, moduleTitulo){
+  var nome=(usuarioAtual&&usuarioAtual.user_metadata&&usuarioAtual.user_metadata.full_name)||usuarioAtual&&usuarioAtual.email||'Participante';
   var data=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
-  var html='<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Certificado Arbus Academy</title>'
+  var curso=moduleTitulo||'Módulo do Curso';
+  var html='<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Certificado — '+curso+'</title>'
     +'<style>'
     +'*{box-sizing:border-box;margin:0;padding:0;}'
     +'body{font-family:Georgia,serif;background:#F8F4EC;display:flex;align-items:center;justify-content:center;min-height:100vh;}'
@@ -765,10 +772,11 @@ function baixarCertificado(){
     +'.cert-badge{font-size:48px;}'
     +'.cert-titulo{text-align:center;font-size:13px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#C9A84C;margin-bottom:16px;}'
     +'.cert-h1{text-align:center;font-size:42px;font-weight:700;color:#0D2B5E;margin-bottom:8px;letter-spacing:-1px;}'
-    +'.cert-sub{text-align:center;font-size:15px;color:#4A6080;margin-bottom:40px;}'
     +'.cert-nome-label{text-align:center;font-size:13px;color:#6B8099;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}'
-    +'.cert-nome{text-align:center;font-size:36px;color:#0D2B5E;font-style:italic;border-bottom:2px solid #C9A84C;display:inline-block;padding-bottom:4px;margin:0 auto 40px;}'
-    +'.cert-nome-wrap{text-align:center;margin-bottom:40px;}'
+    +'.cert-nome{text-align:center;font-size:36px;color:#0D2B5E;font-style:italic;border-bottom:2px solid #C9A84C;display:inline-block;padding-bottom:4px;}'
+    +'.cert-nome-wrap{text-align:center;margin-bottom:36px;}'
+    +'.cert-modulo-label{text-align:center;font-size:13px;color:#6B8099;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}'
+    +'.cert-modulo{text-align:center;font-size:22px;font-weight:700;color:#0D2B5E;margin-bottom:36px;}'
     +'.cert-desc{text-align:center;font-size:15px;color:#4A6080;line-height:1.7;max-width:600px;margin:0 auto 48px;}'
     +'.cert-footer{display:flex;justify-content:space-between;align-items:flex-end;}'
     +'.cert-assinatura{text-align:center;}'
@@ -780,10 +788,12 @@ function baixarCertificado(){
     +'</head><body>'
     +'<div class="cert">'
     +'<div class="cert-top"><div class="cert-logo">Arbus<span>Academy</span></div><div class="cert-badge">🏆</div></div>'
-    +'<div class="cert-titulo">Certificado de Conclusão</div>'
+    +'<div class="cert-titulo">Certificado de Conclusão de Módulo</div>'
     +'<div class="cert-h1">Certificamos que</div>'
     +'<div class="cert-nome-wrap"><div class="cert-nome-label">o(a) aluno(a)</div><div class="cert-nome">'+nome+'</div></div>'
-    +'<div class="cert-desc">concluiu com êxito todos os módulos do curso<br><strong>Plataforma Arbus — Videotelemetria</strong>,<br>desenvolvido pela Arbus Frotas Inteligentes.</div>'
+    +'<div class="cert-modulo-label">concluiu com êxito o módulo</div>'
+    +'<div class="cert-modulo">'+curso+'</div>'
+    +'<div class="cert-desc">parte integrante do curso <strong>Plataforma Arbus — Videotelemetria</strong>,<br>desenvolvido pela Arbus Frotas Inteligentes.</div>'
     +'<div class="cert-footer">'
     +'<div class="cert-assinatura"><div class="cert-linha"></div><div class="cert-ass-nome">Arbus Frotas Inteligentes</div><div class="cert-ass-cargo">Equipe de Treinamento</div></div>'
     +'<div class="cert-data">'+data+'</div>'
