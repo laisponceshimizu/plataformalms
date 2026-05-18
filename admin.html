@@ -95,10 +95,10 @@ select option{background:#1A3C6E;color:#fff;}
 .aula-tipo{font-size:14px;flex-shrink:0;}
 .aula-titulo-txt{font-size:12px;flex:1;color:var(--txt2);}
 .aula-sem{font-size:12px;color:var(--txt3);padding:8px 0;}
-.btn-mover{background:none;border:none;color:var(--txt3);padding:2px 5px;cursor:pointer;font-size:13px;line-height:1;border-radius:4px;transition:background .1s;}
-.btn-mover:hover{background:var(--borda);color:var(--txt);}
 .btn-edit-aula{background:none;border:1.5px solid rgba(0,188,255,.3);color:var(--ciano-hover);padding:4px 9px;font-size:11px;border-radius:7px;cursor:pointer;font-family:'Barlow',sans-serif;font-weight:700;transition:all .15s;}
 .btn-edit-aula:hover{background:var(--ciano-light);}
+.aula-item.dragging{opacity:.4;border-color:var(--ciano);}
+.aula-item.drag-over{border-color:var(--ciano);background:#EEF9FF;}
 .modulos-lista{display:flex;flex-direction:column;gap:10px;margin-bottom:1.5rem;}
 .modulo-row{background:var(--card);border:1.5px solid var(--borda);border-radius:14px;padding:1rem 1.25rem;display:flex;align-items:center;gap:12px;transition:all .15s;box-shadow:0 1px 4px rgba(13,43,94,.05);}
 .modulo-row:hover{border-color:var(--ciano);box-shadow:0 4px 12px rgba(0,188,255,.12);}
@@ -810,17 +810,14 @@ function renderizarConteudo(){
     var videos=aulas.filter(function(a){return a.tipo==='video';});
     var pdfs=aulas.filter(function(a){return a.tipo==='pdf';});
     var aulasOrdenadas=[...aulas].sort(function(a,b){return(a.ordem||0)-(b.ordem||0);});
-    var aulasHtml=aulasOrdenadas.length?aulasOrdenadas.map(function(a,ai){
-      var mId=m.id;
-      return'<div class="aula-item" id="aula-item-'+a.id+'">'
-        +'<div style="display:flex;flex-direction:column;gap:1px;">'
-        +'<button class="btn-mover" title="Mover para cima" onclick="moverAula(\''+a.id+'\','+mId+',-1)">▲</button>'
-        +'<button class="btn-mover" title="Mover para baixo" onclick="moverAula(\''+a.id+'\','+mId+',1)">▼</button>'
-        +'</div>'
+    var aulasHtml=aulasOrdenadas.length?aulasOrdenadas.map(function(a){
+      return'<div class="aula-item" draggable="true" data-id="'+a.id+'" data-module-id="'+m.id+'" '
+        +'ondragstart="dragStartAula(event)" ondragover="dragOverAula(event)" ondrop="dragDropAula(event)" ondragend="dragEndAula(event)">'
+        +'<div class="drag-handle" title="Arrastar para reordenar">⠿</div>'
         +'<div class="aula-tipo">'+(a.tipo==='video'?'▶':'📄')+'</div>'
         +'<div class="aula-titulo-txt">'+a.titulo+'</div>'
-        +'<button class="btn-edit-aula" onclick="abrirModalEditarAula(\''+a.id+'\')">✏️ Editar</button>'
-        +'<button class="btn-danger" onclick="excluirAula(\''+a.id+'\')">✕</button>'
+        +'<button class="btn-edit-aula" onclick="event.stopPropagation();abrirModalEditarAula(\''+a.id+'\')">✏️ Editar</button>'
+        +'<button class="btn-danger" onclick="event.stopPropagation();excluirAula(\''+a.id+'\')">✕</button>'
         +'</div>';
     }).join(''):'<div class="aula-sem">Nenhum conteúdo ainda</div>';
     html+='<div class="modulo-card">'
@@ -964,19 +961,26 @@ async function salvarEdicaoAula(){
   btn.disabled=false;btn.textContent='Salvar';
 }
 
-async function moverAula(id,moduleId,dir){
-  if(modoDemo){mostrarToast('Reordenação não disponível no modo demo.',true);return;}
-  var aulasModulo=[...todasAulas.filter(function(a){return a.module_id===moduleId;})].sort(function(a,b){return(a.ordem||0)-(b.ordem||0);});
-  var idx=aulasModulo.findIndex(function(a){return a.id===id;});
-  var outro=aulasModulo[idx+dir];
-  if(!outro)return;
-  var ordemA=aulasModulo[idx].ordem||idx+1;
-  var ordemB=outro.ordem||(idx+dir+1);
-  try{
-    await sb.from('aulas').update({ordem:ordemB}).eq('id',id);
-    await sb.from('aulas').update({ordem:ordemA}).eq('id',outro.id);
-    await carregarAulas();renderizarConteudo();
-  }catch(e){mostrarToast('Erro ao reordenar: '+e.message,true);}
+var dragSrcAula=null;
+function dragStartAula(e){dragSrcAula=e.currentTarget;e.currentTarget.classList.add('dragging');e.dataTransfer.effectAllowed='move';}
+function dragOverAula(e){e.preventDefault();e.dataTransfer.dropEffect='move';document.querySelectorAll('.aula-item').forEach(function(r){r.classList.remove('drag-over');});e.currentTarget.classList.add('drag-over');}
+function dragEndAula(e){document.querySelectorAll('.aula-item').forEach(function(r){r.classList.remove('dragging','drag-over');});}
+async function dragDropAula(e){
+  e.preventDefault();
+  if(!dragSrcAula||dragSrcAula===e.currentTarget)return;
+  var idA=dragSrcAula.dataset.id, idB=e.currentTarget.dataset.id;
+  var modA=dragSrcAula.dataset.moduleId, modB=e.currentTarget.dataset.moduleId;
+  if(modA!==modB)return;
+  var a=todasAulas.find(function(x){return x.id===idA;}), b=todasAulas.find(function(x){return x.id===idB;});
+  if(!a||!b)return;
+  var tmp=a.ordem;a.ordem=b.ordem;b.ordem=tmp;
+  renderizarConteudo();
+  if(!modoDemo&&sb){
+    try{
+      await Promise.all([sb.from('aulas').update({ordem:a.ordem}).eq('id',idA),sb.from('aulas').update({ordem:b.ordem}).eq('id',idB)]);
+      mostrarToast('Ordem atualizada!');
+    }catch(err){mostrarToast('Erro ao salvar ordem',true);}
+  }
 }
 
 // ── DETALHE CLIENTE
