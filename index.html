@@ -573,10 +573,24 @@ function criarYTPlayer(playerId, ytId, moduleId, aulaId){
 
   ytPlayers[playerId]=new YT.Player(playerId,{
     videoId: ytId,
-    playerVars:{rel:0, modestbranding:1},
+    playerVars:{
+      rel:0,
+      modestbranding:1,
+      cc_load_policy:1,
+      cc_lang_pref:'pt',
+      hl:'pt'
+    },
     events:{
+      onReady: function(event){
+        var p=event.target;
+        if(p.setPlaybackQuality) p.setPlaybackQuality('hd1080');
+        if(p.setPlaybackQualityRange) p.setPlaybackQualityRange('hd1080','hd1080');
+      },
       onStateChange: function(event){
-        // YT.PlayerState.ENDED = 0
+        if(event.data===1){
+          var p=event.target;
+          if(p.setPlaybackQuality) p.setPlaybackQuality('hd1080');
+        }
         if(event.data===0){
           onVideoTerminou(moduleId, aulaId, playerId);
         }
