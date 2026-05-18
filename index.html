@@ -585,6 +585,12 @@ function criarYTPlayer(playerId, ytId, moduleId, aulaId){
         var p=event.target;
         if(p.setPlaybackQuality) p.setPlaybackQuality('hd1080');
         if(p.setPlaybackQualityRange) p.setPlaybackQualityRange('hd1080','hd1080');
+        try{
+          p.loadModule('captions');
+          p.setOption('captions','track',{'languageCode':'pt'});
+        }catch(e){
+          try{p.loadModule('captions');p.setOption('captions','track',{});}catch(e2){}
+        }
       },
       onStateChange: function(event){
         if(event.data===1){
