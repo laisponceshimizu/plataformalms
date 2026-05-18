@@ -211,6 +211,10 @@ select option{background:#1A3C6E;color:#fff;}
     <!-- TRILHA -->
     <div id="secao-trilha">
       <div class="titulo-sec">Trilha de treinamento</div>
+      <div class="faq-busca-wrap">
+        <span class="faq-busca-icone">🔍</span>
+        <input type="text" id="trilha-busca" placeholder="Buscar pergunta..." oninput="filtrarModulos()">
+      </div>
       <div class="modulos" id="lista-modulos"></div>
     </div>
 
@@ -428,7 +432,15 @@ function getConcluido(id){return !!(progressoUsuario[id]&&progressoUsuario[id].c
 function getDesbloq(id,idx){if(idx<=1)return true;return getConcluido(todosModulos[idx-2].id);}
 
 // ── RENDER LISTA DE MÓDULOS
-function renderizarModulos(){
+function filtrarModulos(){
+  var q=document.getElementById('trilha-busca').value.toLowerCase().trim();
+  if(!q){renderizarModulos();return;}
+  var filtrados=todosModulos.filter(function(m){return(m.titulo||'').toLowerCase().includes(q);});
+  renderizarModulos(filtrados);
+}
+
+function renderizarModulos(modsFiltrados){
+  var mods=modsFiltrados||todosModulos;
   var total=todosModulos.length;
   var conc=todosModulos.filter(function(m){return getConcluido(m.id);}).length;
   var pg=total?Math.round(todosModulos.reduce(function(a,m){return a+getPct(m.id);},0)/total):0;
@@ -436,9 +448,11 @@ function renderizarModulos(){
   var sp=document.getElementById('s-progresso');sp.textContent=pg+'%';sp.className='stat-n destaque';
   document.getElementById('s-certs').textContent=conc>=Math.ceil(total/2)?1:0;
 
+  if(!mods.length){document.getElementById('lista-modulos').innerHTML='<div style="text-align:center;padding:2rem;color:var(--txt3);font-size:14px;">Nenhum módulo encontrado.</div>';return;}
   var html='';
-  todosModulos.forEach(function(m,i){
-    var pct=getPct(m.id), done=getConcluido(m.id), desbloq=getDesbloq(m.id,i);
+  mods.forEach(function(m,i){
+    var idx=todosModulos.indexOf(m);
+    var pct=getPct(m.id), done=getConcluido(m.id), desbloq=getDesbloq(m.id,idx);
     var nc=done?'mod-num concluido':desbloq?'mod-num':'mod-num bloq';
     var bc=desbloq?'modulo':'modulo bloqueado';
     var botao=desbloq?'<button onclick="event.stopPropagation();abrirModulo('+m.id+')" style="background:'+(done?'#222228':'#00BFFF')+';color:'+(done?'#8A8A9A':'#000')+';border:none;border-radius:7px;padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;">'+(done?'Revisitar':'Continuar ▶')+'</button>':'';
