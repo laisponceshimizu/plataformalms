@@ -60,6 +60,13 @@ select option{background:#1A3C6E;color:#fff;}
 .stat-n{font-family:'Nunito',sans-serif;font-size:30px;font-weight:900;color:var(--azul);}
 .stat-n.destaque{color:var(--ciano);}
 .stat-l{font-size:12px;color:var(--txt3);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:.3px;}
+.cert-banner{display:none;align-items:center;gap:1.25rem;background:linear-gradient(135deg,#0D2B5E 0%,#1A3C6E 100%);border:2px solid #C9A84C;border-radius:16px;padding:1.5rem 2rem;margin-bottom:1.5rem;box-shadow:0 4px 20px rgba(201,168,76,.2);}
+.cert-banner-icon{font-size:40px;flex-shrink:0;}
+.cert-banner-text{flex:1;}
+.cert-banner-title{font-family:'Nunito',sans-serif;font-size:18px;font-weight:900;color:#fff;letter-spacing:-.3px;margin-bottom:4px;}
+.cert-banner-sub{font-size:13px;color:rgba(255,255,255,.65);}
+.btn-cert{background:linear-gradient(135deg,#C9A84C,#E8C96A);color:#0D2B5E;border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Barlow',sans-serif;letter-spacing:.3px;flex-shrink:0;transition:all .15s;box-shadow:0 2px 10px rgba(201,168,76,.35);}
+.btn-cert:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(201,168,76,.5);}
 .nav-cliente{display:flex;gap:4px;margin-bottom:1.5rem;background:var(--card);border:0.5px solid var(--borda);border-radius:12px;padding:4px;box-shadow:0 1px 4px rgba(13,43,94,.05);}
 .nav-tab{flex:1;text-align:center;padding:9px 12px;border-radius:9px;font-size:13px;cursor:pointer;color:var(--txt3);font-weight:700;transition:all .15s;}
 .nav-tab.ativa{background:var(--azul);color:#fff;box-shadow:0 2px 8px rgba(13,43,94,.3);}
@@ -208,6 +215,14 @@ select option{background:#1A3C6E;color:#fff;}
       <div class="stat"><div class="stat-n" id="s-concluidos">0</div><div class="stat-l">Módulos concluídos</div></div>
       <div class="stat"><div class="stat-n" id="s-progresso">0%</div><div class="stat-l">Progresso geral</div></div>
       <div class="stat"><div class="stat-n" id="s-certs">0</div><div class="stat-l">Certificados</div></div>
+    </div>
+    <div class="cert-banner" id="cert-banner">
+      <div class="cert-banner-icon">🏆</div>
+      <div class="cert-banner-text">
+        <div class="cert-banner-title">Parabéns! Você concluiu todos os módulos.</div>
+        <div class="cert-banner-sub">Seu certificado de conclusão está disponível para download.</div>
+      </div>
+      <button class="btn-cert" onclick="baixarCertificado()">⬇ Baixar Certificado</button>
     </div>
     <div class="nav-cliente">
       <div class="nav-tab ativa" id="tab-trilha" onclick="trocarTab('trilha',this)">🎓 Trilha</div>
@@ -461,7 +476,9 @@ function renderizarModulos(modsFiltrados, busca){
   var pg=total?Math.round(todosModulos.reduce(function(a,m){return a+getPct(m.id);},0)/total):0;
   document.getElementById('s-concluidos').textContent=conc;
   var sp=document.getElementById('s-progresso');sp.textContent=pg+'%';sp.className='stat-n destaque';
-  document.getElementById('s-certs').textContent=conc>=Math.ceil(total/2)?1:0;
+  var todosConc=conc===total&&total>0;
+  document.getElementById('s-certs').textContent=todosConc?1:0;
+  document.getElementById('cert-banner').style.display=todosConc?'flex':'none';
 
   if(!mods.length){document.getElementById('lista-modulos').innerHTML='<div style="text-align:center;padding:2rem;color:var(--txt3);font-size:14px;">Nenhum módulo encontrado.</div>';return;}
   var html='';
@@ -730,6 +747,53 @@ document.addEventListener('keydown',function(e){
   if(e.key==='Escape') fecharOverlay();
   if(e.key==='Enter'&&document.getElementById('tela-login').style.display!=='none') autenticar();
 });
+
+// ── CERTIFICADO
+function baixarCertificado(){
+  var nome=(usuarioAtual&&(usuarioAtual.user_metadata&&usuarioAtual.user_metadata.full_name))||usuarioAtual&&usuarioAtual.email||'Participante';
+  var data=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
+  var html='<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Certificado Arbus Academy</title>'
+    +'<style>'
+    +'*{box-sizing:border-box;margin:0;padding:0;}'
+    +'body{font-family:Georgia,serif;background:#F8F4EC;display:flex;align-items:center;justify-content:center;min-height:100vh;}'
+    +'@media print{body{background:#F8F4EC;}@page{size:A4 landscape;margin:0;}}'
+    +'.cert{width:960px;max-width:100%;background:#fff;border:10px solid #0D2B5E;padding:60px 80px;position:relative;box-shadow:0 8px 40px rgba(0,0,0,.15);}'
+    +'.cert::before{content:"";position:absolute;inset:18px;border:2px solid #C9A84C;pointer-events:none;}'
+    +'.cert-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:40px;}'
+    +'.cert-logo{font-family:Arial,sans-serif;font-size:22px;font-weight:900;color:#0D2B5E;letter-spacing:-1px;}'
+    +'.cert-logo span{color:#00BCFF;}'
+    +'.cert-badge{font-size:48px;}'
+    +'.cert-titulo{text-align:center;font-size:13px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#C9A84C;margin-bottom:16px;}'
+    +'.cert-h1{text-align:center;font-size:42px;font-weight:700;color:#0D2B5E;margin-bottom:8px;letter-spacing:-1px;}'
+    +'.cert-sub{text-align:center;font-size:15px;color:#4A6080;margin-bottom:40px;}'
+    +'.cert-nome-label{text-align:center;font-size:13px;color:#6B8099;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}'
+    +'.cert-nome{text-align:center;font-size:36px;color:#0D2B5E;font-style:italic;border-bottom:2px solid #C9A84C;display:inline-block;padding-bottom:4px;margin:0 auto 40px;}'
+    +'.cert-nome-wrap{text-align:center;margin-bottom:40px;}'
+    +'.cert-desc{text-align:center;font-size:15px;color:#4A6080;line-height:1.7;max-width:600px;margin:0 auto 48px;}'
+    +'.cert-footer{display:flex;justify-content:space-between;align-items:flex-end;}'
+    +'.cert-assinatura{text-align:center;}'
+    +'.cert-linha{width:180px;border-top:1.5px solid #0D2B5E;margin:0 auto 6px;}'
+    +'.cert-ass-nome{font-size:13px;font-weight:700;color:#0D2B5E;}'
+    +'.cert-ass-cargo{font-size:11px;color:#6B8099;}'
+    +'.cert-data{font-size:13px;color:#6B8099;}'
+    +'</style>'
+    +'</head><body>'
+    +'<div class="cert">'
+    +'<div class="cert-top"><div class="cert-logo">Arbus<span>Academy</span></div><div class="cert-badge">🏆</div></div>'
+    +'<div class="cert-titulo">Certificado de Conclusão</div>'
+    +'<div class="cert-h1">Certificamos que</div>'
+    +'<div class="cert-nome-wrap"><div class="cert-nome-label">o(a) aluno(a)</div><div class="cert-nome">'+nome+'</div></div>'
+    +'<div class="cert-desc">concluiu com êxito todos os módulos do curso<br><strong>Plataforma Arbus — Videotelemetria</strong>,<br>desenvolvido pela Arbus Frotas Inteligentes.</div>'
+    +'<div class="cert-footer">'
+    +'<div class="cert-assinatura"><div class="cert-linha"></div><div class="cert-ass-nome">Arbus Frotas Inteligentes</div><div class="cert-ass-cargo">Equipe de Treinamento</div></div>'
+    +'<div class="cert-data">'+data+'</div>'
+    +'</div>'
+    +'</div>'
+    +'<script>window.onload=function(){window.print();}<\/script>'
+    +'</body></html>';
+  var w=window.open('','_blank','width=1000,height=750');
+  if(w){w.document.write(html);w.document.close();}
+}
 
 // ── NAV TABS
 function trocarTab(nome,el){
