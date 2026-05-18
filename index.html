@@ -717,8 +717,14 @@ var FAQ_DATA = [];
 async function carregarTodasAulasCliente(){
   try{
     var r=await sb.from('aulas').select('id,module_id,titulo,descricao').eq('ativo',true);
+    if(r.error)throw r.error;
     todasAulasCliente=r.data||[];
-  }catch(e){todasAulasCliente=[];}
+  }catch(e){
+    try{
+      var r2=await sb.from('aulas').select('id,module_id,titulo').eq('ativo',true);
+      todasAulasCliente=r2.data||[];
+    }catch(e2){todasAulasCliente=[];}
+  }
 }
 
 async function carregarFaqCliente(){
