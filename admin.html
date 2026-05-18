@@ -164,6 +164,27 @@ select option{background:#1A3C6E;color:#fff;}
 .toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--azul);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:700;z-index:9999;transform:translateY(100px);opacity:0;transition:all .3s;box-shadow:0 8px 24px rgba(13,43,94,.3);border-left:3px solid var(--ciano);}
 .toast.show{transform:translateY(0);opacity:1;}
 .toast.erro{background:#DC2626;border-left-color:#FCA5A5;}
+@media(max-width:768px){
+  .conteudo{padding:1rem;}
+  .topbar{padding:.75rem 1rem;}
+  .stats{grid-template-columns:repeat(2,1fr);}
+  .nav-abas{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .nav-aba{white-space:nowrap;flex-shrink:0;}
+  .tabela-header{grid-template-columns:2fr 1fr 80px;padding:.5rem 1rem;}
+  .tabela-header .th:nth-child(2),.tabela-header .th:nth-child(3),.tabela-header .th:nth-child(5),.tabela-header .th:nth-child(6){display:none;}
+  .tabela-row{grid-template-columns:2fr 1fr 80px;padding:.625rem 1rem;}
+  .tabela-row .td:nth-child(2),.tabela-row .td:nth-child(3),.tabela-row .td:nth-child(5),.tabela-row .td:nth-child(6){display:none;}
+  .modulos-grid{grid-template-columns:1fr;}
+  #painel-detalhe{width:100%;left:0;}
+  .det-stats{grid-template-columns:repeat(3,1fr);}
+  .modal-box{padding:1.25rem;}
+  .sec-titulo{font-size:14px;}
+  .modulo-row{padding:.875rem 1rem;gap:8px;}
+  .mod-acoes{gap:4px;}
+  .mod-acoes .btn{padding:5px 8px;font-size:11px;}
+  .aula-item{flex-wrap:wrap;gap:6px;}
+  .aula-titulo-txt{min-width:0;}
+}
 </style>
 </head>
 <body>

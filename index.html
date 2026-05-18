@@ -89,6 +89,7 @@ select option{background:#1A3C6E;color:#fff;}
 .mod-titulo{font-size:14px;font-weight:700;color:var(--txt);}
 .mod-sub{font-size:11px;color:var(--txt3);margin-top:2px;font-weight:500;}
 .mod-pct{font-size:12px;color:var(--ciano);font-weight:800;}
+.mod-botoes{display:flex;gap:8px;flex-shrink:0;}
 .progbar{height:4px;background:#E2EAF2;border-radius:4px;margin-top:6px;overflow:hidden;}
 .progbar-fill{height:100%;background:var(--ciano);border-radius:4px;transition:width .4s;}
 .overlay{position:fixed;inset:0;background:rgba(13,43,94,.75);z-index:999;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:2rem 1rem;}
@@ -493,7 +494,7 @@ function renderizarModulos(modsFiltrados, busca){
     var nc=done?'mod-num concluido':'mod-num';
     var barra=pct>0?'<div class="progbar"><div class="progbar-fill" style="width:'+pct+'%"></div></div>':'';
     var numConteudo=done?'✓':(m.emoji||i+1);
-    var botoes='<div style="display:flex;gap:8px;flex-shrink:0;">'
+    var botoes='<div class="mod-botoes">'
       +(done?'<button onclick="event.stopPropagation();baixarCertificado('+m.id+',\''+m.titulo.replace(/'/g,"\\'")+'\')" style="background:linear-gradient(135deg,#C9A84C,#E8C96A);color:#0D2B5E;border:none;border-radius:7px;padding:7px 14px;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap;">🏆 Certificado</button>':'')
       +'<button onclick="event.stopPropagation();abrirModulo('+m.id+')" style="background:'+(done?'#E8EEF5':'#00BFFF')+';color:'+(done?'#4A6080':'#000')+';border:none;border-radius:7px;padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">'+(done?'Revisitar':'Continuar ▶')+'</button>'
       +'</div>';
@@ -1036,6 +1037,36 @@ async function carregarTickets(){
     50%  { filter: drop-shadow(0 0 8px rgba(37,211,102,0.55)); }
     100% { filter: drop-shadow(0 0 0px rgba(37,211,102,0)); }
   }
+@media(max-width:640px){
+  .conteudo{padding:.875rem;}
+  .topbar{padding:.75rem 1rem;}
+  .topbar-user{display:none;}
+  .hero-banner{min-height:160px;}
+  .hero-content{padding:1.25rem 1rem;}
+  .hero-title{font-size:18px;}
+  .hero-label{margin-bottom:8px;}
+  .boas-vindas{padding:1.25rem;border-radius:12px;}
+  .boas-vindas h2{font-size:18px;}
+  .stats{gap:8px;}
+  .stat{padding:.75rem .625rem;}
+  .stat-n{font-size:22px;}
+  .stat-l{font-size:10px;}
+  .cert-banner{flex-direction:column;text-align:center;padding:1.125rem 1rem;gap:.625rem;}
+  .cert-banner-icon{font-size:28px;}
+  .cert-banner-title{font-size:15px;}
+  .cert-banner-sub{font-size:12px;}
+  .nav-tab{font-size:12px;padding:8px 6px;}
+  .modulo{flex-wrap:wrap;padding:.875rem 1rem;gap:8px;}
+  .mod-pct{display:none;}
+  .mod-botoes{display:flex;gap:6px;width:100%;justify-content:flex-end;flex-shrink:0;}
+  .mod-botoes button{font-size:11px!important;padding:6px 10px!important;}
+  .overlay{padding:.5rem;}
+  .overlay-box{padding:1.25rem;border-radius:14px;margin-top:0;}
+  .overlay-titulo{font-size:15px;}
+  .aula-card-header{padding:10px 12px;}
+  .aula-nome{font-size:12px;}
+  .whatsapp-float{bottom:16px;right:16px;}
+}
 </style>
 
 <a class="whatsapp-float"
