@@ -65,7 +65,14 @@ select option{background:#1A3C6E;color:#fff;}
 .nav-tab.ativa{background:var(--azul);color:#fff;box-shadow:0 2px 8px rgba(13,43,94,.3);}
 .titulo-sec{font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;color:var(--txt);margin-bottom:1rem;letter-spacing:-.3px;}
 .modulos{display:flex;flex-direction:column;gap:10px;}
+.modulo-wrap{display:flex;flex-direction:column;}
 .modulo{background:var(--card);border:1.5px solid var(--borda);border-radius:14px;padding:1rem 1.25rem;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .15s;box-shadow:0 1px 4px rgba(13,43,94,.05);}
+.modulo-wrap .modulo{border-radius:14px 14px 0 0;border-bottom:none;}
+.aulas-match{background:#F0F9FF;border:1.5px solid rgba(0,188,255,.3);border-top:none;border-radius:0 0 14px 14px;overflow:hidden;}
+.aula-match-item{display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:13px;color:var(--ciano-hover);cursor:pointer;border-top:1px solid rgba(0,188,255,.1);transition:background .15s;}
+.aula-match-item:first-child{border-top:none;}
+.aula-match-item:hover{background:rgba(0,188,255,.1);}
+.aula-match-label{font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--txt3);padding:8px 18px 4px;}
 .modulo:hover:not(.bloqueado){border-color:var(--ciano);box-shadow:0 4px 16px rgba(0,188,255,.15);transform:translateY(-1px);}
 .modulo.bloqueado{opacity:.4;cursor:default;}
 .mod-num{width:40px;height:40px;border-radius:10px;background:var(--azul);color:#fff;font-family:'Nunito',sans-serif;font-weight:900;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
@@ -442,11 +449,12 @@ function filtrarModulos(){
   var filtrados=todosModulos.filter(function(m){
     return(m.titulo||'').toLowerCase().includes(q)||(m.descricao||'').toLowerCase().includes(q)||modulosComVideo.includes(m.id);
   });
-  renderizarModulos(filtrados);
+  renderizarModulos(filtrados, q);
 }
 
-function renderizarModulos(modsFiltrados){
+function renderizarModulos(modsFiltrados, busca){
   var mods=modsFiltrados||todosModulos;
+  var q=busca?busca.toLowerCase().trim():'';
   var total=todosModulos.length;
   var conc=todosModulos.filter(function(m){return getConcluido(m.id);}).length;
   var pg=total?Math.round(todosModulos.reduce(function(a,m){return a+getPct(m.id);},0)/total):0;
@@ -464,7 +472,16 @@ function renderizarModulos(modsFiltrados){
     var botao=desbloq?'<button onclick="event.stopPropagation();abrirModulo('+m.id+')" style="background:'+(done?'#222228':'#00BFFF')+';color:'+(done?'#8A8A9A':'#000')+';border:none;border-radius:7px;padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;">'+(done?'Revisitar':'Continuar ▶')+'</button>':'';
     var barra=pct>0?'<div class="progbar"><div class="progbar-fill" style="width:'+pct+'%"></div></div>':'';
     var numConteudo=done?'✓':(m.emoji||i+1);
-    html+='<div class="'+bc+'" onclick="'+(desbloq?'abrirModulo('+m.id+')':'')+'">'
+
+    var aulasMatch=q?todasAulasCliente.filter(function(a){
+      return a.module_id===m.id&&((a.titulo||'').toLowerCase().includes(q)||(a.descricao||'').toLowerCase().includes(q));
+    }):[];
+
+    var cardClass=aulasMatch.length?'modulo-wrap':'';
+    var moduloClass=aulasMatch.length?bc:bc;
+
+    html+='<div class="'+cardClass+'">'
+      +'<div class="'+moduloClass+'" onclick="'+(desbloq?'abrirModulo('+m.id+')':'')+'">'
       +'<div class="'+nc+'">'+numConteudo+'</div>'
       +'<div class="mod-info">'
       +'<div class="mod-titulo">'+m.titulo+'</div>'
@@ -474,6 +491,20 @@ function renderizarModulos(modsFiltrados){
       +'<div class="mod-pct">'+(done?'':pct+'%')+'</div>'
       +botao
       +'</div>';
+
+    if(aulasMatch.length){
+      html+='<div class="aulas-match">'
+        +'<div class="aula-match-label">Vídeos encontrados</div>'
+        +aulasMatch.map(function(a){
+          return'<div class="aula-match-item" onclick="abrirModulo('+m.id+')">'
+            +'<span style="color:var(--ciano);font-size:15px;">▶</span>'
+            +'<span>'+a.titulo+'</span>'
+            +'</div>';
+        }).join('')
+        +'</div>';
+    }
+
+    html+='</div>';
   });
   document.getElementById('lista-modulos').innerHTML=html;
 }
