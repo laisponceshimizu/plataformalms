@@ -212,7 +212,7 @@ select option{background:#1A3C6E;color:#fff;}
     <div class="nav-cliente">
       <div class="nav-tab ativa" id="tab-trilha" onclick="trocarTab('trilha',this)">🎓 Trilha</div>
       <div class="nav-tab" id="tab-faq" onclick="trocarTab('faq',this)">❓ FAQ</div>
-      <div class="nav-tab" id="tab-suporte" onclick="trocarTab('suporte',this)" style="display:none;">💬 Suporte</div>
+      <div class="nav-tab" id="tab-suporte" onclick="trocarTab('suporte',this)">💬 Suporte</div>
     </div>
 
     <!-- TRILHA -->
@@ -251,7 +251,8 @@ select option{background:#1A3C6E;color:#fff;}
         </div>
       </div>
 
-      <div class="ticket-form">
+      <!-- ticket-form desabilitado temporariamente -->
+      <div class="ticket-form" style="display:none;">
         <div class="ticket-form-titulo">✉️ Enviar dúvida</div>
         <span class="campo-label">Assunto</span>
         <input type="text" id="ticket-assunto" placeholder="Ex: Não consigo gerar relatório">
@@ -265,8 +266,8 @@ select option{background:#1A3C6E;color:#fff;}
         <button class="btn btn-primary btn-full" style="margin-top:1rem;" onclick="enviarTicket()">Enviar dúvida</button>
       </div>
 
-      <div class="titulo-sec">Meus chamados</div>
-      <div id="lista-tickets"><div style="text-align:center;padding:1.5rem;color:#4A4A5A;font-size:13px;">Carregando...</div></div>
+      <div class="titulo-sec" style="display:none;">Meus chamados</div>
+      <div id="lista-tickets" style="display:none;"></div>
     </div>
   </div>
 </div>
