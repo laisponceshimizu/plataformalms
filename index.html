@@ -45,6 +45,11 @@ select option{background:#1A3C6E;color:#fff;}
 .btn-sair:hover{background:rgba(239,68,68,.2);border-color:rgba(239,68,68,.35);}
 .topbar-user{font-size:12px;color:rgba(255,255,255,.45);}
 .conteudo{padding:2rem;max-width:920px;margin:0 auto;width:100%;}
+.hero-banner{position:relative;width:100%;min-height:320px;background:url('https://arbusfrotas.com.br/wp-content/uploads/2025/11/Frame-6564.png') center center/cover no-repeat;background-color:#0D2B5E;display:flex;align-items:flex-end;}
+.hero-banner::before{content:'';position:absolute;inset:0;background:linear-gradient(to right,rgba(5,18,50,.75) 45%,rgba(5,18,50,.25));pointer-events:none;}
+.hero-content{position:relative;z-index:1;padding:2.5rem 2rem;max-width:660px;}
+.hero-label{font-size:12px;font-weight:600;color:rgba(255,255,255,.65);letter-spacing:.5px;text-transform:uppercase;margin-bottom:14px;}
+.hero-title{font-family:'Nunito',sans-serif;font-size:clamp(22px,3vw,32px);font-weight:900;color:#fff;line-height:1.25;letter-spacing:-.5px;margin:0;}
 .boas-vindas{background:var(--azul);border-radius:16px;padding:2rem;margin-bottom:1.5rem;position:relative;overflow:hidden;}
 .boas-vindas::after{content:'';position:absolute;right:-30px;top:-30px;width:160px;height:160px;background:rgba(0,188,255,.15);border-radius:50%;}
 .boas-vindas h2{font-family:'Nunito',sans-serif;font-size:24px;font-weight:900;color:#fff;margin-bottom:6px;letter-spacing:-.5px;}
@@ -180,6 +185,13 @@ select option{background:#1A3C6E;color:#fff;}
       <button class="btn-sair" onclick="sair()">Sair</button>
     </div>
   </div>
+  <div class="hero-banner">
+    <div class="hero-content">
+      <div class="hero-label">Videotelemetria Arbus</div>
+      <h1 class="hero-title">Proteja sua frota com tecnologia<br>que enxerga, analisa e alerta<br>— em tempo real</h1>
+    </div>
+  </div>
+
   <div class="conteudo">
     <div class="boas-vindas">
       <h2>Bem-vindo, <span id="primeiro-nome"></span>! 👋</h2>
