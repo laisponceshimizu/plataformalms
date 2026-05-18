@@ -95,6 +95,10 @@ select option{background:#1A3C6E;color:#fff;}
 .aula-tipo{font-size:14px;flex-shrink:0;}
 .aula-titulo-txt{font-size:12px;flex:1;color:var(--txt2);}
 .aula-sem{font-size:12px;color:var(--txt3);padding:8px 0;}
+.btn-mover{background:none;border:none;color:var(--txt3);padding:2px 5px;cursor:pointer;font-size:13px;line-height:1;border-radius:4px;transition:background .1s;}
+.btn-mover:hover{background:var(--borda);color:var(--txt);}
+.btn-edit-aula{background:none;border:1.5px solid rgba(0,188,255,.3);color:var(--ciano-hover);padding:4px 9px;font-size:11px;border-radius:7px;cursor:pointer;font-family:'Barlow',sans-serif;font-weight:700;transition:all .15s;}
+.btn-edit-aula:hover{background:var(--ciano-light);}
 .modulos-lista{display:flex;flex-direction:column;gap:10px;margin-bottom:1.5rem;}
 .modulo-row{background:var(--card);border:1.5px solid var(--borda);border-radius:14px;padding:1rem 1.25rem;display:flex;align-items:center;gap:12px;transition:all .15s;box-shadow:0 1px 4px rgba(13,43,94,.05);}
 .modulo-row:hover{border-color:var(--ciano);box-shadow:0 4px 12px rgba(0,188,255,.12);}
@@ -385,6 +389,25 @@ select option{background:#1A3C6E;color:#fff;}
     <div style="display:flex;gap:10px;margin-top:1.25rem;">
       <button class="btn btn-ghost" style="flex:1;justify-content:center;" onclick="fecharModal()">Cancelar</button>
       <button class="btn btn-primary" style="flex:1;justify-content:center;" id="btn-salvar-aula" onclick="salvarAula()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR AULA -->
+<div class="modal-overlay" id="modal-editar-aula">
+  <div class="modal-box">
+    <div class="modal-titulo">✏️ Editar aula</div>
+    <input type="hidden" id="edit-aula-id">
+    <label>Título da aula</label>
+    <input type="text" id="edit-aula-titulo" placeholder="Ex: Aula 1 — Visão geral do dashboard">
+    <label style="margin-top:10px;">Descrição / Palavras-chave <span style="font-weight:400;color:var(--txt3);">(ajuda na busca)</span></label>
+    <textarea id="edit-aula-descricao" placeholder="Ex: alertas, BDV, jornada..." rows="2" style="resize:vertical;font-size:13px;padding:9px 12px;border:1px solid var(--borda);border-radius:8px;background:#F5F8FB;color:var(--txt);font-family:inherit;width:100%;box-sizing:border-box;"></textarea>
+    <label>Ordem (número)</label>
+    <input type="number" id="edit-aula-ordem" value="1" min="1">
+    <div class="msg-erro" id="edit-aula-erro" style="margin-top:10px;display:none;"></div>
+    <div style="display:flex;gap:10px;margin-top:1.25rem;">
+      <button class="btn btn-ghost" style="flex:1;justify-content:center;" onclick="fecharModalEditarAula()">Cancelar</button>
+      <button class="btn btn-primary" style="flex:1;justify-content:center;" id="btn-salvar-edicao-aula" onclick="salvarEdicaoAula()">Salvar</button>
     </div>
   </div>
 </div>
@@ -786,10 +809,17 @@ function renderizarConteudo(){
     var aulas=todasAulas.filter(function(a){return a.module_id===m.id;});
     var videos=aulas.filter(function(a){return a.tipo==='video';});
     var pdfs=aulas.filter(function(a){return a.tipo==='pdf';});
-    var aulasHtml=aulas.length?aulas.map(function(a){
-      return'<div class="aula-item">'
+    var aulasOrdenadas=[...aulas].sort(function(a,b){return(a.ordem||0)-(b.ordem||0);});
+    var aulasHtml=aulasOrdenadas.length?aulasOrdenadas.map(function(a,ai){
+      var mId=m.id;
+      return'<div class="aula-item" id="aula-item-'+a.id+'">'
+        +'<div style="display:flex;flex-direction:column;gap:1px;">'
+        +'<button class="btn-mover" title="Mover para cima" onclick="moverAula(\''+a.id+'\','+mId+',-1)">▲</button>'
+        +'<button class="btn-mover" title="Mover para baixo" onclick="moverAula(\''+a.id+'\','+mId+',1)">▼</button>'
+        +'</div>'
         +'<div class="aula-tipo">'+(a.tipo==='video'?'▶':'📄')+'</div>'
         +'<div class="aula-titulo-txt">'+a.titulo+'</div>'
+        +'<button class="btn-edit-aula" onclick="abrirModalEditarAula(\''+a.id+'\')">✏️ Editar</button>'
         +'<button class="btn-danger" onclick="excluirAula(\''+a.id+'\')">✕</button>'
         +'</div>';
     }).join(''):'<div class="aula-sem">Nenhum conteúdo ainda</div>';
@@ -902,6 +932,51 @@ async function excluirAula(id){
   if(!confirm('Remover este conteúdo?')) return;
   try{await sb.from('aulas').delete().eq('id',id);await carregarAulas();renderizarConteudo();mostrarToast('Conteúdo removido.');}
   catch(e){mostrarToast('Erro: '+e.message,true);}
+}
+
+function abrirModalEditarAula(id){
+  var a=todasAulas.find(function(x){return x.id===id;});
+  if(!a)return;
+  document.getElementById('edit-aula-id').value=a.id;
+  document.getElementById('edit-aula-titulo').value=a.titulo||'';
+  document.getElementById('edit-aula-descricao').value=a.descricao||'';
+  document.getElementById('edit-aula-ordem').value=a.ordem||1;
+  document.getElementById('edit-aula-erro').style.display='none';
+  var btn=document.getElementById('btn-salvar-edicao-aula');btn.disabled=false;btn.textContent='Salvar';
+  document.getElementById('modal-editar-aula').classList.add('aberto');
+}
+function fecharModalEditarAula(){document.getElementById('modal-editar-aula').classList.remove('aberto');}
+
+async function salvarEdicaoAula(){
+  if(modoDemo){mostrarToast('Edição não disponível no modo demo.',true);return;}
+  var id=document.getElementById('edit-aula-id').value;
+  var titulo=document.getElementById('edit-aula-titulo').value.trim();
+  var descricao=document.getElementById('edit-aula-descricao').value.trim();
+  var ordem=parseInt(document.getElementById('edit-aula-ordem').value)||1;
+  var erroEl=document.getElementById('edit-aula-erro');erroEl.style.display='none';
+  if(!titulo){erroEl.textContent='O título não pode estar vazio.';erroEl.style.display='block';return;}
+  var btn=document.getElementById('btn-salvar-edicao-aula');btn.disabled=true;btn.textContent='Salvando...';
+  try{
+    var r=await sb.from('aulas').update({titulo:titulo,descricao:descricao||null,ordem:ordem}).eq('id',id);
+    if(r.error)throw r.error;
+    fecharModalEditarAula();await carregarAulas();renderizarConteudo();mostrarToast('Aula atualizada!');
+  }catch(e){erroEl.textContent='Erro: '+e.message;erroEl.style.display='block';}
+  btn.disabled=false;btn.textContent='Salvar';
+}
+
+async function moverAula(id,moduleId,dir){
+  if(modoDemo){mostrarToast('Reordenação não disponível no modo demo.',true);return;}
+  var aulasModulo=[...todasAulas.filter(function(a){return a.module_id===moduleId;})].sort(function(a,b){return(a.ordem||0)-(b.ordem||0);});
+  var idx=aulasModulo.findIndex(function(a){return a.id===id;});
+  var outro=aulasModulo[idx+dir];
+  if(!outro)return;
+  var ordemA=aulasModulo[idx].ordem||idx+1;
+  var ordemB=outro.ordem||(idx+dir+1);
+  try{
+    await sb.from('aulas').update({ordem:ordemB}).eq('id',id);
+    await sb.from('aulas').update({ordem:ordemA}).eq('id',outro.id);
+    await carregarAulas();renderizarConteudo();
+  }catch(e){mostrarToast('Erro ao reordenar: '+e.message,true);}
 }
 
 // ── DETALHE CLIENTE
