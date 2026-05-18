@@ -223,7 +223,10 @@ select option{background:#1A3C6E;color:#fff;}
     <div id="aba-clientes" style="display:none;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
         <div class="sec-titulo" style="margin:0;">Todos os clientes</div>
-        <input type="text" id="busca" placeholder="Buscar..." oninput="filtrarClientes()" style="width:220px;padding:7px 12px;background:#F5F8FB;border:1px solid #D1DCE8;border-radius:8px;color:#0D2B5E;font-size:13px;outline:none;">
+        <div style="display:flex;gap:10px;align-items:center;">
+          <input type="text" id="busca" placeholder="Buscar..." oninput="filtrarClientes()" style="width:200px;padding:7px 12px;background:#F5F8FB;border:1px solid #D1DCE8;border-radius:8px;color:#0D2B5E;font-size:13px;outline:none;">
+          <button class="btn btn-primary" onclick="abrirModalNovoCliente()">+ Novo cliente</button>
+        </div>
       </div>
       <div class="tabela-wrap">
         <div class="tabela-header"><div class="th">Cliente</div><div class="th">Empresa</div><div class="th">Último acesso</div><div class="th">Progresso</div><div class="th">Módulos</div><div class="th">Status</div><div class="th">Ação</div></div>
@@ -380,6 +383,36 @@ select option{background:#1A3C6E;color:#fff;}
     <div style="display:flex;gap:10px;margin-top:1.25rem;">
       <button class="btn btn-ghost" style="flex:1;justify-content:center;" onclick="fecharModal()">Cancelar</button>
       <button class="btn btn-primary" style="flex:1;justify-content:center;" id="btn-salvar-aula" onclick="salvarAula()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NOVO CLIENTE -->
+<div class="modal-overlay" id="modal-novo-cliente">
+  <div class="modal-box">
+    <div class="modal-titulo">+ Novo cliente</div>
+    <div style="display:flex;flex-direction:column;gap:.85rem;">
+      <div>
+        <label style="font-size:12px;font-weight:700;color:var(--txt2);display:block;margin-bottom:4px;">Nome completo *</label>
+        <input type="text" id="nc-nome" placeholder="Ex: João Silva" style="width:100%;padding:9px 12px;border:1px solid var(--borda);border-radius:8px;font-size:13px;background:#F5F8FB;color:var(--txt);outline:none;box-sizing:border-box;">
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:700;color:var(--txt2);display:block;margin-bottom:4px;">E-mail *</label>
+        <input type="email" id="nc-email" placeholder="Ex: joao@empresa.com" style="width:100%;padding:9px 12px;border:1px solid var(--borda);border-radius:8px;font-size:13px;background:#F5F8FB;color:var(--txt);outline:none;box-sizing:border-box;">
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:700;color:var(--txt2);display:block;margin-bottom:4px;">Senha provisória *</label>
+        <input type="password" id="nc-senha" placeholder="Mínimo 6 caracteres" style="width:100%;padding:9px 12px;border:1px solid var(--borda);border-radius:8px;font-size:13px;background:#F5F8FB;color:var(--txt);outline:none;box-sizing:border-box;">
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:700;color:var(--txt2);display:block;margin-bottom:4px;">Empresa</label>
+        <input type="text" id="nc-empresa" placeholder="Ex: Transportadora ABC" style="width:100%;padding:9px 12px;border:1px solid var(--borda);border-radius:8px;font-size:13px;background:#F5F8FB;color:var(--txt);outline:none;box-sizing:border-box;">
+      </div>
+      <div id="nc-erro" style="display:none;background:#FFF0F0;border:1px solid #FFCDD2;border-radius:8px;padding:9px 12px;color:#C62828;font-size:13px;"></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:1.5rem;">
+      <button class="btn" style="flex:1;justify-content:center;background:#F5F8FB;color:var(--txt2);border:1px solid var(--borda);" onclick="fecharModalNovoCliente()">Cancelar</button>
+      <button class="btn btn-primary" style="flex:1;justify-content:center;" id="btn-criar-cliente" onclick="criarCliente()">Criar cliente</button>
     </div>
   </div>
 </div>
@@ -773,6 +806,41 @@ function filtrarClientes(){
   var q=document.getElementById('busca').value.toLowerCase();
   var f=todosUsers.filter(function(u){return(u.full_name||'').toLowerCase().includes(q)||u.email.toLowerCase().includes(q)||(u.empresa||'').toLowerCase().includes(q);});
   document.getElementById('tabela-clientes').innerHTML=buildRows(f);
+}
+
+function abrirModalNovoCliente(){
+  ['nc-nome','nc-email','nc-senha','nc-empresa'].forEach(function(id){document.getElementById(id).value='';});
+  var erroEl=document.getElementById('nc-erro');erroEl.style.display='none';erroEl.textContent='';
+  var btn=document.getElementById('btn-criar-cliente');btn.disabled=false;btn.textContent='Criar cliente';
+  document.getElementById('modal-novo-cliente').classList.add('aberto');
+}
+function fecharModalNovoCliente(){document.getElementById('modal-novo-cliente').classList.remove('aberto');}
+
+async function criarCliente(){
+  if(modoDemo){mostrarToast('Cadastro de clientes não disponível no modo demo.',true);return;}
+  var nome=document.getElementById('nc-nome').value.trim();
+  var email=document.getElementById('nc-email').value.trim();
+  var senha=document.getElementById('nc-senha').value;
+  var empresa=document.getElementById('nc-empresa').value.trim();
+  var erroEl=document.getElementById('nc-erro');
+  erroEl.style.display='none';
+  if(!nome||!email||!senha){erroEl.textContent='Preencha nome, e-mail e senha.';erroEl.style.display='block';return;}
+  if(senha.length<6){erroEl.textContent='Senha deve ter pelo menos 6 caracteres.';erroEl.style.display='block';return;}
+  var btn=document.getElementById('btn-criar-cliente');btn.disabled=true;btn.textContent='Criando...';
+  try{
+    var r=await sb.auth.signUp({email:email,password:senha,options:{data:{full_name:nome}}});
+    if(r.error)throw r.error;
+    var userId=r.data.user.id;
+    await sb.from('perfis').upsert({id:userId,nome:nome,empresa:empresa||null,role:'cliente'});
+    fecharModalNovoCliente();
+    mostrarToast('✅ Cliente criado com sucesso!');
+    await carregarDados();
+  }catch(e){
+    var msgs={'User already registered':'E-mail já cadastrado.','Password should be at least 6 characters':'Senha muito curta (mín. 6 caracteres).'};
+    erroEl.textContent=msgs[e.message]||e.message;
+    erroEl.style.display='block';
+    btn.disabled=false;btn.textContent='Criar cliente';
+  }
 }
 
 function trocarAba(nome,el){
